@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人工作记录系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4a90d9;
+            --primary-hover: #357abd;
+            --secondary-color: #5cb85c;
+            --danger-color: #d9534f;
+            --warning-color: #f0ad4e;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* 头部导航 */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #667eea);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header h1.main-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* 主布局 */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), #667eea);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 内容区域 */
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-color), #667eea);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card.work { background: linear-gradient(135deg, #4a90d9, #357abd); }
+        .stat-card.thought { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .stat-card.idea { background: linear-gradient(135deg, #e67e22, #d35400); }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-success {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #4cae4c;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c9302c;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* 记录列表 */
+        .records-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .record-item {
+            background: var(--bg-color);
+            border-radius: 10px;
+            padding: 1.25rem;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .record-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow);
+        }
+
+        .record-item.work { border-left-color: #4a90d9; }
+        .record-item.thought { border-left-color: #9b59b6; }
+        .record-item.idea { border-left-color: #e67e22; }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .record-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .record-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+
+        .record-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .record-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .record-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* 标签 */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .tag-primary {
+            background: rgba(74, 144, 217, 0.1);
+            color: var(--primary-color);
+        }
+
+        .tag-success {
+            background: rgba(92, 184, 92, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .tag-warning {
+            background: rgba(240, 173, 78, 0.1);
+            color: var(--warning-color);
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* 过滤器 */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                position: static;
+                order: -1;
+            }
+
+            .nav-menu {
+                display: flex;
+                gap: 0.5rem;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+
+            .nav-item {
+                margin-bottom: 0;
+                flex-shrink: 0;
+            }
+
+            .nav-link {
+                white-space: nowrap;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 通知提示 */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text-primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-hover);
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 2000;
+            animation: toastSlideIn 0.3s ease;
+        }
+
+        .toast.active {
+            display: flex;
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast.success { background: var(--secondary-color); }
+        .toast.error { background: var(--danger-color); }
+        .toast.warning { background: var(--warning-color); }
+
+        /* 优先级标记 */
+        .priority {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: rgba(217, 83, 79, 0.1);
+            color: var(--danger-color);
+        }
+
+        .priority-medium {
+            background: rgba(240, 173, 78, 0.1);
+            color: var(--warning-color);
+        }
+
+        .priority-low {
+            background: rgba(92, 184, 92, 0.1);
+            color: var(--secondary-color);
+        }
+
+        /* 时间线 */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.25rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 2px solid var(--card-bg);
+        }
+
+        .timeline-date {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* 隐藏文件输入 */
+        .file-input {
+            display: none;
+        }
+
+        /* 图片预览 */
+        .image-preview {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .image-preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-item .remove-image {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .image-item {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-item img:hover {
+            transform: scale(1.05);
+        }
+
+        /* 登录页面样式 */
+        .login-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: loginSlideIn 0.5s ease;
+        }
+
+        @keyframes loginSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .login-form {
+            margin-top: 1.5rem;
+        }
+
+        .login-form .form-label {
+            text-align: left;
+        }
+
+        .login-error {
+            color: var(--danger-color);
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .login-page.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <h1 class="login-title">塞尔夫记录</h1>
+                <p class="login-subtitle">Leeself's Reflection</p>
+            </div>
+            <form class="login-form" onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="请输入访问密码..." required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    登 录
+                </button>
+                <p id="loginError" class="login-error" style="display: none;">密码错误，请重试</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- 头部 -->
+    <header class="header">
+        <div class="header-content">
+            <h1>📋 个人工作记录系统</h1>
+            <h1 class="main-title">塞尔夫记录-Leeself's Reflection</h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary btn-sm" onclick="app.exportData()">
+                    📤 导出数据
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">
+                    📥 导入数据
+                </button>
+                <input type="file" id="importFile" class="file-input" accept=".json" onchange="app.importData(this)">
+            </div>
+        </div>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link active" onclick="app.switchTab('dashboard')">
+                            <span class="nav-icon">📊</span>
+                            <span>概览</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="app.switchTab('work')">
+                            <span class="nav-icon">💼</span>
+                            <span>工作记录</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="app.switchTab('thought')">
+                            <span class="nav-icon">💭</span>
+                            <span>思考总结</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="app.switchTab('idea')">
+                            <span class="nav-icon">💡</span>
+                            <span>灵感记录</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 内容区域 -->
+        <main class="content">
+            <!-- 概览页面 -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h2 class="section-title">📊 数据概览</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card work">
+                        <div class="stat-label">工作记录</div>
+                        <div class="stat-value" id="workCount">0</div>
+                    </div>
+                    <div class="stat-card thought">
+                        <div class="stat-label">思考总结</div>
+                        <div class="stat-value" id="thoughtCount">0</div>
+                    </div>
+                    <div class="stat-card idea">
+                        <div class="stat-label">灵感记录</div>
+                        <div class="stat-value" id="ideaCount">0</div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h3 class="section-title">🕐 最近记录</h3>
+                </div>
+                <div id="recentRecords" class="records-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div class="empty-state-title">暂无记录</div>
+                        <p>开始记录你的第一条工作日志吧！</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 工作记录页面 -->
+            <section id="work" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">💼 工作记录</h2>
+                    <button class="btn btn-primary" onclick="app.openModal('work')">
+                        ➕ 新增工作记录
+                    </button>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <input type="text" id="workSearch" placeholder="搜索工作记录..." oninput="app.filterRecords('work')">
+                    </div>
+                    <select class="form-select" id="workPriorityFilter" onchange="app.filterRecords('work')" style="width: auto;">
+                        <option value="">所有优先级</option>
+                        <option value="high">高优先级</option>
+                        <option value="medium">中优先级</option>
+                        <option value="low">低优先级</option>
+                    </select>
+                </div>
+
+                <div id="workList" class="records-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💼</div>
+                        <div class="empty-state-title">暂无工作记录</div>
+                        <p>点击上方按钮添加你的工作记录</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 思考总结页面 -->
+            <section id="thought" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">💭 思考总结</h2>
+                    <button class="btn btn-primary" onclick="app.openModal('thought')">
+                        ➕ 新增思考总结
+                    </button>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <input type="text" id="thoughtSearch" placeholder="搜索思考总结..." oninput="app.filterRecords('thought')">
+                    </div>
+                </div>
+
+                <div id="thoughtList" class="records-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💭</div>
+                        <div class="empty-state-title">暂无思考总结</div>
+                        <p>记录你的工作经验和反思</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 灵感记录页面 -->
+            <section id="idea" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">💡 灵感记录</h2>
+                    <button class="btn btn-primary" onclick="app.openModal('idea')">
+                        ➕ 新增灵感
+                    </button>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <input type="text" id="ideaSearch" placeholder="搜索灵感..." oninput="app.filterRecords('idea')">
+                    </div>
+                </div>
+
+                <div id="ideaList" class="records-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💡</div>
+                        <div class="empty-state-title">暂无灵感记录</div>
+                        <p>随时记录你的创意和想法</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 模态框 -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">新增记录</h3>
+                <button class="modal-close" onclick="app.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="recordForm">
+                    <input type="hidden" id="recordId">
+                    <input type="hidden" id="recordType">
+                    
+                    <div class="form-group">
+                        <label class="form-label">标题 *</label>
+                        <input type="text" class="form-input" id="recordTitle" required placeholder="输入标题...">
+                    </div>
+
+                    <div class="form-row" id="workFields" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">日期 *</label>
+                            <input type="date" class="form-input" id="workDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">优先级</label>
+                            <select class="form-select" id="workPriority">
+                                <option value="">无优先级</option>
+                                <option value="low">低</option>
+                                <option value="medium" selected>中</option>
+                                <option value="high">高</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row" id="thoughtFields" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">重要性</label>
+                            <select class="form-select" id="thoughtImportance">
+                                <option value="">请选择</option>
+                                <option value="important">很重要</option>
+                                <option value="highlight">有点亮点</option>
+                                <option value="normal">普通</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">内容 *</label>
+                        <textarea class="form-textarea" id="recordContent" required placeholder="详细描述..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">标签（用逗号分隔）</label>
+                        <input type="text" class="form-input" id="recordTags" placeholder="例如：项目A, 重要, 紧急">
+                    </div>
+
+                    <div class="form-group" id="ideaFields" style="display: none;">
+                        <label class="form-label">上传图片</label>
+                        <input type="file" class="form-input" id="ideaImage" accept="image/*" multiple>
+                        <small class="form-text" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                            支持上传多个图片，每个图片最大5MB
+                        </small>
+                        <div id="imagePreview" class="image-preview" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="app.closeModal()">取消</button>
+                <button type="button" class="btn btn-primary" onclick="app.saveRecord()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div class="toast" id="toast">
+        <span id="toastIcon">✓</span>
+        <span id="toastMessage">操作成功</span>
+    </div>
+
+    <script>
+        // 应用主类
+        class WorkRecordSystem {
+            constructor() {
+                this.data = this.loadData();
+                this.currentTab = 'dashboard';
+                this.init();
+            }
+
+            init() {
+                this.updateStats();
+                this.renderAllLists();
+                this.setupEventListeners();
+                
+                // 设置默认日期为今天
+                document.getElementById('workDate').valueAsDate = new Date();
+            }
+
+            setupEventListeners() {
+                // 点击模态框外部关闭
+                document.getElementById('modal').addEventListener('click', (e) => {
+                    if (e.target.id === 'modal') {
+                        this.closeModal();
+                    }
+                });
+
+                // ESC键关闭模态框
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeModal();
+                    }
+                });
+            }
+
+            // 加载数据
+            loadData() {
+                const defaultData = {
+                    work: [],
+                    thought: [],
+                    idea: []
+                };
+                
+                try {
+                    const stored = localStorage.getItem('workRecordData');
+                    return stored ? JSON.parse(stored) : defaultData;
+                } catch (e) {
+                    console.error('加载数据失败:', e);
+                    return defaultData;
+                }
+            }
+
+            // 保存数据
+            saveData() {
+                try {
+                    localStorage.setItem('workRecordData', JSON.stringify(this.data));
+                } catch (e) {
+                    console.error('保存数据失败:', e);
+                    this.showToast('保存失败，可能是存储空间不足', 'error');
+                }
+            }
+
+            // 切换标签页
+            switchTab(tab) {
+                this.currentTab = tab;
+                
+                // 更新导航状态
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                event.target.closest('.nav-link').classList.add('active');
+                
+                // 显示对应内容
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(tab).classList.add('active');
+                
+                // 刷新数据
+                if (tab === 'dashboard') {
+                    this.updateStats();
+                    this.renderRecentRecords();
+                } else {
+                    this.renderList(tab);
+                }
+            }
+
+            // 更新统计数据
+            updateStats() {
+                document.getElementById('workCount').textContent = this.data.work.length;
+                document.getElementById('thoughtCount').textContent = this.data.thought.length;
+                document.getElementById('ideaCount').textContent = this.data.idea.length;
+            }
+
+            // 渲染所有列表
+            renderAllLists() {
+                this.renderRecentRecords();
+                this.renderList('work');
+                this.renderList('thought');
+                this.renderList('idea');
+            }
+
+            // 渲染最近记录
+            renderRecentRecords() {
+                const container = document.getElementById('recentRecords');
+                const allRecords = [
+                    ...this.data.work.map(r => ({ ...r, type: 'work' })),
+                    ...this.data.thought.map(r => ({ ...r, type: 'thought' })),
+                    ...this.data.idea.map(r => ({ ...r, type: 'idea' }))
+                ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+
+                if (allRecords.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📝</div>
+                            <div class="empty-state-title">暂无记录</div>
+                            <p>开始记录你的第一条工作日志吧！</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = allRecords.map(record => this.createRecordHTML(record, record.type)).join('');
+            }
+
+            // 渲染列表
+            renderList(type) {
+                const container = document.getElementById(type + 'List');
+                const records = this.data[type];
+                
+                // 应用过滤器
+                const searchTerm = document.getElementById(type + 'Search')?.value.toLowerCase() || '';
+                const priorityFilter = document.getElementById(type + 'PriorityFilter')?.value || '';
+                
+                let filteredRecords = records;
+                
+                if (searchTerm) {
+                    filteredRecords = filteredRecords.filter(r => 
+                        r.title.toLowerCase().includes(searchTerm) ||
+                        r.content.toLowerCase().includes(searchTerm) ||
+                        (r.tags && r.tags.some(t => t.toLowerCase().includes(searchTerm)))
+                    );
+                }
+                
+                if (priorityFilter && type === 'work') {
+                    filteredRecords = filteredRecords.filter(r => r.priority === priorityFilter);
+                }
+                
+                // 排序：最新的在前
+                filteredRecords.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                if (filteredRecords.length === 0) {
+                    const emptyMessages = {
+                        work: { icon: '💼', title: '暂无工作记录', desc: '点击上方按钮添加你的工作记录' },
+                        thought: { icon: '💭', title: '暂无思考总结', desc: '记录你的工作经验和反思' },
+                        idea: { icon: '💡', title: '暂无灵感记录', desc: '随时记录你的创意和想法' }
+                    };
+                    const msg = emptyMessages[type];
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">${msg.icon}</div>
+                            <div class="empty-state-title">${msg.title}</div>
+                            <p>${msg.desc}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = filteredRecords.map(record => this.createRecordHTML(record, type)).join('');
+            }
+
+            // 创建记录HTML
+            createRecordHTML(record, type) {
+                const typeConfig = {
+                    work: { icon: '💼', class: 'work' },
+                    thought: { icon: '💭', class: 'thought' },
+                    idea: { icon: '💡', class: 'idea' }
+                };
+                
+                const config = typeConfig[type];
+                const date = new Date(record.createdAt);
+                const dateStr = date.toLocaleDateString('zh-CN');
+                const timeStr = date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                
+                let priorityBadge = '';
+                if (type === 'work' && record.priority) {
+                    const priorityMap = {
+                        high: { class: 'priority-high', text: '高' },
+                        medium: { class: 'priority-medium', text: '中' },
+                        low: { class: 'priority-low', text: '低' }
+                    };
+                    const p = priorityMap[record.priority];
+                    priorityBadge = `<span class="priority ${p.class}">${p.text}</span>`;
+                }
+                
+                let importanceBadge = '';
+                if (type === 'thought' && record.importance) {
+                    const importanceMap = {
+                        important: { class: 'priority-high', text: '很重要' },
+                        highlight: { class: 'priority-medium', text: '有点亮点' },
+                        normal: { class: 'priority-low', text: '普通' }
+                    };
+                    const imp = importanceMap[record.importance];
+                    importanceBadge = `<span class="priority ${imp.class}">${imp.text}</span>`;
+                }
+                
+                const tagsHtml = record.tags ? record.tags.map(tag => 
+                    `<span class="tag tag-primary">${tag}</span>`
+                ).join(' ') : '';
+
+                const imagesHtml = type === 'idea' && record.images ? `
+                    <div class="image-grid">
+                        ${record.images.map(img => `
+                            <div class="image-item">
+                                <img src="${img}" alt="灵感图片" onclick="this.style.cursor = 'pointer'; window.open('${img}', '_blank');">
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="record-item ${config.class}">
+                        <div class="record-header">
+                            <div>
+                                <span class="record-title">${config.icon} ${record.title}</span>
+                                ${priorityBadge}
+                                ${importanceBadge}
+                            </div>
+                            <div class="record-meta">
+                                <span>📅 ${record.date || dateStr}</span>
+                                <span>🕐 ${timeStr}</span>
+                            </div>
+                        </div>
+                        <div class="record-content">${record.content}</div>
+                        ${tagsHtml ? `<div style="margin-top: 0.75rem;">${tagsHtml}</div>` : ''}
+                        ${imagesHtml}
+                        <div class="record-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="app.editRecord('${type}', '${record.id}')">✏️ 编辑</button>
+                            <button class="btn btn-sm btn-danger" onclick="app.deleteRecord('${type}', '${record.id}')">🗑️ 删除</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 打开模态框
+            openModal(type, recordId = null) {
+                const modal = document.getElementById('modal');
+                const form = document.getElementById('recordForm');
+                const titleMap = {
+                    work: recordId ? '编辑工作记录' : '新增工作记录',
+                    thought: recordId ? '编辑思考总结' : '新增思考总结',
+                    idea: recordId ? '编辑灵感记录' : '新增灵感记录'
+                };
+                
+                document.getElementById('modalTitle').textContent = titleMap[type];
+                document.getElementById('recordType').value = type;
+                document.getElementById('workFields').style.display = type === 'work' ? 'grid' : 'none';
+                document.getElementById('thoughtFields').style.display = type === 'thought' ? 'grid' : 'none';
+                document.getElementById('ideaFields').style.display = type === 'idea' ? 'block' : 'none';
+                
+                // 清空图片预览
+                document.getElementById('imagePreview').innerHTML = '';
+                
+                // 重新绑定图片上传事件
+                const imageInput = document.getElementById('ideaImage');
+                imageInput.onchange = () => this.handleImageUpload();
+                
+                if (recordId) {
+                    const record = this.data[type].find(r => r.id === recordId);
+                    if (record) {
+                        document.getElementById('recordId').value = record.id;
+                        document.getElementById('recordTitle').value = record.title;
+                        document.getElementById('recordContent').value = record.content;
+                        document.getElementById('recordTags').value = record.tags ? record.tags.join(', ') : '';
+                        
+                        if (type === 'work') {
+                            document.getElementById('workDate').value = record.date || new Date().toISOString().split('T')[0];
+                            document.getElementById('workPriority').value = record.priority || '';
+                        }
+                        
+                        if (type === 'thought') {
+                            document.getElementById('thoughtImportance').value = record.importance || '';
+                        }
+                        
+                        if (type === 'idea' && record.images) {
+                            // 显示已上传的图片
+                            const previewContainer = document.getElementById('imagePreview');
+                            record.images.forEach((imageData, index) => {
+                                const previewItem = document.createElement('div');
+                                previewItem.className = 'image-preview-item';
+                                previewItem.innerHTML = `
+                                    <img src="${imageData}" alt="已上传图片">
+                                    <button class="remove-image" onclick="app.removeImage(${index})">×</button>
+                                `;
+                                previewContainer.appendChild(previewItem);
+                            });
+                        }
+                    }
+                } else {
+                    form.reset();
+                    document.getElementById('recordId').value = '';
+                    document.getElementById('workDate').valueAsDate = new Date();
+                    document.getElementById('workPriority').value = '';
+                    document.getElementById('thoughtImportance').value = '';
+                    document.getElementById('ideaImage').value = '';
+                    document.getElementById('imagePreview').innerHTML = '';
+                }
+                
+                modal.classList.add('active');
+                document.getElementById('recordTitle').focus();
+            }
+
+            // 关闭模态框
+            closeModal() {
+                document.getElementById('modal').classList.remove('active');
+            }
+
+            // 保存记录
+            saveRecord() {
+                const type = document.getElementById('recordType').value;
+                const id = document.getElementById('recordId').value;
+                const title = document.getElementById('recordTitle').value.trim();
+                const content = document.getElementById('recordContent').value.trim();
+                const tagsStr = document.getElementById('recordTags').value.trim();
+                
+                if (!title || !content) {
+                    this.showToast('请填写标题和内容', 'error');
+                    return;
+                }
+                
+                const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+                
+                const record = {
+                    id: id || Date.now().toString(),
+                    title,
+                    content,
+                    tags,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                if (!id) {
+                    record.createdAt = new Date().toISOString();
+                } else {
+                    const existing = this.data[type].find(r => r.id === id);
+                    if (existing) {
+                        record.createdAt = existing.createdAt;
+                    }
+                }
+                
+                if (type === 'work') {
+                    record.date = document.getElementById('workDate').value;
+                    record.priority = document.getElementById('workPriority').value;
+                }
+                
+                if (type === 'thought') {
+                    record.importance = document.getElementById('thoughtImportance').value;
+                }
+                
+                if (type === 'idea') {
+                    // 处理图片
+                    record.images = this.getImagesFromPreview();
+                }
+                
+                if (id) {
+                    const index = this.data[type].findIndex(r => r.id === id);
+                    if (index !== -1) {
+                        this.data[type][index] = record;
+                    }
+                } else {
+                    this.data[type].push(record);
+                }
+                
+                this.saveData();
+                this.closeModal();
+                this.updateStats();
+                this.renderAllLists();
+                this.showToast(id ? '记录已更新' : '记录已添加', 'success');
+            }
+
+            // 编辑记录
+            editRecord(type, id) {
+                this.openModal(type, id);
+            }
+
+            // 删除记录
+            deleteRecord(type, id) {
+                if (!confirm('确定要删除这条记录吗？此操作不可恢复。')) {
+                    return;
+                }
+                
+                this.data[type] = this.data[type].filter(r => r.id !== id);
+                this.saveData();
+                this.updateStats();
+                this.renderAllLists();
+                this.showToast('记录已删除', 'success');
+            }
+
+            // 过滤记录
+            filterRecords(type) {
+                this.renderList(type);
+            }
+
+            // 导出数据
+            exportData() {
+                const dataStr = JSON.stringify(this.data, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `工作记录备份_${new Date().toLocaleDateString('zh-CN')}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                this.showToast('数据导出成功', 'success');
+            }
+
+            // 导入数据
+            importData(input) {
+                const file = input.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        
+                        // 验证数据结构
+                        if (!imported.work || !imported.thought || !imported.idea) {
+                            throw new Error('数据格式不正确');
+                        }
+                        
+                        // 合并数据（去重）
+                        const mergeRecords = (existing, incoming) => {
+                            const existingIds = new Set(existing.map(r => r.id));
+                            const newRecords = incoming.filter(r => !existingIds.has(r.id));
+                            return [...existing, ...newRecords];
+                        };
+                        
+                        this.data.work = mergeRecords(this.data.work, imported.work);
+                        this.data.thought = mergeRecords(this.data.thought, imported.thought);
+                        this.data.idea = mergeRecords(this.data.idea, imported.idea);
+                        
+                        this.saveData();
+                        this.updateStats();
+                        this.renderAllLists();
+                        this.showToast('数据导入成功', 'success');
+                    } catch (err) {
+                        this.showToast('导入失败：' + err.message, 'error');
+                    }
+                    input.value = '';
+                };
+                reader.readAsText(file);
+            }
+
+            // 显示提示
+            showToast(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                const iconMap = {
+                    success: '✓',
+                    error: '✗',
+                    warning: '⚠'
+                };
+                
+                toast.className = 'toast ' + type;
+                document.getElementById('toastIcon').textContent = iconMap[type];
+                document.getElementById('toastMessage').textContent = message;
+                
+                toast.classList.add('active');
+                
+                setTimeout(() => {
+                    toast.classList.remove('active');
+                }, 3000);
+            }
+
+            // 处理图片上传
+            handleImageUpload() {
+                const input = document.getElementById('ideaImage');
+                const files = input.files;
+                const previewContainer = document.getElementById('imagePreview');
+                
+                if (files.length === 0) return;
+                
+                Array.from(files).forEach(file => {
+                    if (file.size > 5 * 1024 * 1024) {
+                        this.showToast('图片大小不能超过5MB', 'error');
+                        return;
+                    }
+                    
+                    if (!file.type.startsWith('image/')) {
+                        this.showToast('请上传图片文件', 'error');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imageData = e.target.result;
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'image-preview-item';
+                        previewItem.innerHTML = `
+                            <img src="${imageData}" alt="图片预览">
+                            <button class="remove-image" onclick="app.removeImage(this)">×</button>
+                        `;
+                        previewContainer.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                // 清空文件输入，允许重复选择同一个文件
+                input.value = '';
+            }
+
+            // 从预览中获取图片数据
+            getImagesFromPreview() {
+                const previewItems = document.querySelectorAll('.image-preview-item');
+                const images = [];
+                
+                previewItems.forEach(item => {
+                    const img = item.querySelector('img');
+                    if (img) {
+                        images.push(img.src);
+                    }
+                });
+                
+                return images.length > 0 ? images : undefined;
+            }
+
+            // 移除图片
+            removeImage(element) {
+                if (typeof element === 'number') {
+                    // 编辑模式下根据索引移除
+                    const previewItems = document.querySelectorAll('.image-preview-item');
+                    if (previewItems[element]) {
+                        previewItems[element].remove();
+                    }
+                } else {
+                    // 上传模式下移除当前图片
+                    element.closest('.image-preview-item').remove();
+                }
+            }
+        }
+
+        // 初始化应用
+        const app = new WorkRecordSystem();
+        
+        // 检查登录状态
+        function checkLogin() {
+            const isLoggedIn = sessionStorage.getItem('leeseflLogin') === 'true';
+            if (isLoggedIn) {
+                document.getElementById('loginPage').classList.add('hidden');
+            } else {
+                document.getElementById('loginPage').classList.remove('hidden');
+            }
+        }
+        
+        // 处理登录
+        function handleLogin(event) {
+            event.preventDefault();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (password === '135790') {
+                sessionStorage.setItem('leeseflLogin', 'true');
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('loginError').style.display = 'none';
+                return false;
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('loginPassword').value = '';
+                return false;
+            }
+        }
+        
+        // 初始化时检查登录状态
+        checkLogin();
+    </script>
+</body>
+</html>
