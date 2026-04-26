@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人工作记录系统</title>
+    <title>塞尔夫记录-Leeself's Reflection</title>
     <style>
         * {
             margin: 0;
@@ -34,7 +34,75 @@
             min-height: 100vh;
         }
 
-        /* 头部导航 */
+        /* 登录页面 */
+        .login-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: loginSlideIn 0.5s ease;
+        }
+
+        @keyframes loginSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .login-error {
+            color: var(--danger-color);
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .login-page.hidden {
+            display: none;
+        }
+
+        /* 头部 */
         .header {
             background: linear-gradient(135deg, var(--primary-color), #667eea);
             color: white;
@@ -61,17 +129,129 @@
         }
 
         .header h1.main-title {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
             font-size: 1.8rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            pointer-events: none;
+            user-select: none;
+            flex: 1;
+            text-align: center;
         }
 
         .header-actions {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
+        }
+
+        /* 按钮 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c9302c;
+        }
+
+        .btn-info {
+            background: #31b0d5;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #269abc;
+        }
+
+        .btn-success {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #4cae4c;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
         }
 
         /* 主布局 */
@@ -123,14 +303,6 @@
         .nav-link.active {
             background: linear-gradient(135deg, var(--primary-color), #667eea);
             color: white;
-        }
-
-        .nav-icon {
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         /* 内容区域 */
@@ -198,108 +370,6 @@
             font-weight: 700;
         }
 
-        /* 表单样式 */
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .form-input,
-        .form-textarea,
-        .form-select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-            font-family: inherit;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        /* 按钮样式 */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .btn-secondary {
-            background: var(--bg-color);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border-color);
-        }
-
-        .btn-success {
-            background: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #4cae4c;
-        }
-
-        .btn-danger {
-            background: var(--danger-color);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c9302c;
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-
         /* 记录列表 */
         .records-list {
             display: flex;
@@ -313,11 +383,6 @@
             padding: 1.25rem;
             border-left: 4px solid var(--primary-color);
             transition: all 0.3s ease;
-        }
-
-        .record-item:hover {
-            transform: translateX(4px);
-            box-shadow: var(--shadow);
         }
 
         .record-item.work { border-left-color: #4a90d9; }
@@ -347,12 +412,6 @@
             flex-wrap: wrap;
         }
 
-        .record-meta span {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
         .record-content {
             color: var(--text-secondary);
             line-height: 1.6;
@@ -380,14 +439,29 @@
             color: var(--primary-color);
         }
 
-        .tag-success {
-            background: rgba(92, 184, 92, 0.1);
-            color: var(--secondary-color);
+        /* 优先级 */
+        .priority {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
-        .tag-warning {
+        .priority-high {
+            background: rgba(217, 83, 79, 0.1);
+            color: var(--danger-color);
+        }
+
+        .priority-medium {
             background: rgba(240, 173, 78, 0.1);
             color: var(--warning-color);
+        }
+
+        .priority-low {
+            background: rgba(92, 184, 92, 0.1);
+            color: var(--secondary-color);
         }
 
         /* 模态框 */
@@ -476,7 +550,7 @@
             gap: 0.75rem;
         }
 
-        /* 过滤器 */
+        /* 搜索和筛选 */
         .filter-bar {
             display: flex;
             gap: 1rem;
@@ -526,57 +600,30 @@
             color: var(--text-primary);
         }
 
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-            }
-
-            .sidebar {
-                position: static;
-                order: -1;
-            }
-
-            .nav-menu {
-                display: flex;
-                gap: 0.5rem;
-                overflow-x: auto;
-                padding-bottom: 0.5rem;
-            }
-
-            .nav-item {
-                margin-bottom: 0;
-                flex-shrink: 0;
-            }
-
-            .nav-link {
-                white-space: nowrap;
-            }
-
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+        /* 图片预览 */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
         }
 
-        /* 加载动画 */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+        .image-item {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .image-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-item img:hover {
+            transform: scale(1.05);
         }
 
         /* 通知提示 */
@@ -613,213 +660,39 @@
 
         .toast.success { background: var(--secondary-color); }
         .toast.error { background: var(--danger-color); }
-        .toast.warning { background: var(--warning-color); }
 
-        /* 优先级标记 */
-        .priority {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .priority-high {
-            background: rgba(217, 83, 79, 0.1);
-            color: var(--danger-color);
-        }
-
-        .priority-medium {
-            background: rgba(240, 173, 78, 0.1);
-            color: var(--warning-color);
-        }
-
-        .priority-low {
-            background: rgba(92, 184, 92, 0.1);
-            color: var(--secondary-color);
-        }
-
-        /* 时间线 */
-        .timeline {
-            position: relative;
-            padding-left: 2rem;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--border-color);
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -2.25rem;
-            top: 0.5rem;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            border: 2px solid var(--card-bg);
-        }
-
-        .timeline-date {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        /* 隐藏文件输入 */
+        /* 隐藏元素 */
         .file-input {
             display: none;
         }
 
-        /* 图片预览 */
-        .image-preview {
-            margin-top: 1rem;
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .image-preview-item {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 2px solid var(--border-color);
-        }
-
-        .image-preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .image-preview-item .remove-image {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-        }
-
-        .image-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 0.75rem;
-            margin-top: 0.75rem;
-        }
-
-        .image-item {
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-        }
-
-        .image-item img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .image-item img:hover {
-            transform: scale(1.05);
-        }
-
-        /* 登录页面样式 */
-        .login-page {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .login-container {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: loginSlideIn 0.5s ease;
-        }
-
-        @keyframes loginSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+            .sidebar {
+                position: static;
+                order: -1;
             }
-        }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+            .nav-menu {
+                display: flex;
+                gap: 0.5rem;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
 
-        .login-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
 
-        .login-subtitle {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-
-        .login-form {
-            margin-top: 1.5rem;
-        }
-
-        .login-form .form-label {
-            text-align: left;
-        }
-
-        .login-error {
-            color: var(--danger-color);
-            text-align: center;
-            margin-top: 1rem;
-            font-size: 0.875rem;
-        }
-
-        .login-page.hidden {
-            display: none;
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -831,7 +704,7 @@
                 <h1 class="login-title">塞尔夫记录</h1>
                 <p class="login-subtitle">Leeself's Reflection</p>
             </div>
-            <form class="login-form" onsubmit="return handleLogin(event)">
+            <form class="login-form" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label class="form-label">密码</label>
                     <input type="password" class="form-input" id="loginPassword" placeholder="请输入访问密码..." required>
@@ -846,17 +719,26 @@
 
     <!-- 头部 -->
     <header class="header">
-        <div class="header-content">
+        <div class="header-content" style="justify-content: space-between;">
             <h1>📋 个人工作记录系统</h1>
             <h1 class="main-title">塞尔夫记录-Leeself's Reflection</h1>
-            <div class="header-actions">
-                <button class="btn btn-secondary btn-sm" onclick="app.exportData()">
+            <div class="header-actions" style="justify-content: flex-end;">
+                <button class="btn btn-secondary btn-sm" onclick="openSyncModal()">
+                    ⚙️ 同步设置
+                </button>
+                <button class="btn btn-info btn-sm" onclick="loadFromCloud()">
+                    📥 从云端加载
+                </button>
+                <button class="btn btn-success btn-sm" onclick="syncToCloud()">
+                    ☁️ 同步云端
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="exportData()">
                     📤 导出数据
                 </button>
                 <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">
                     📥 导入数据
                 </button>
-                <input type="file" id="importFile" class="file-input" accept=".json" onchange="app.importData(this)">
+                <input type="file" id="importFile" class="file-input" accept=".json" onchange="importData(this)">
             </div>
         </div>
     </header>
@@ -868,26 +750,26 @@
             <nav>
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a class="nav-link active" onclick="app.switchTab('dashboard')">
-                            <span class="nav-icon">📊</span>
+                        <a class="nav-link active" onclick="switchTab('dashboard')">
+                            <span>📊</span>
                             <span>概览</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" onclick="app.switchTab('work')">
-                            <span class="nav-icon">💼</span>
+                        <a class="nav-link" onclick="switchTab('work')">
+                            <span>💼</span>
                             <span>工作记录</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" onclick="app.switchTab('thought')">
-                            <span class="nav-icon">💭</span>
+                        <a class="nav-link" onclick="switchTab('thought')">
+                            <span>💭</span>
                             <span>思考总结</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" onclick="app.switchTab('idea')">
-                            <span class="nav-icon">💡</span>
+                        <a class="nav-link" onclick="switchTab('idea')">
+                            <span>💡</span>
                             <span>灵感记录</span>
                         </a>
                     </li>
@@ -934,16 +816,16 @@
             <section id="work" class="section">
                 <div class="section-header">
                     <h2 class="section-title">💼 工作记录</h2>
-                    <button class="btn btn-primary" onclick="app.openModal('work')">
+                    <button class="btn btn-primary" onclick="openModal('work')">
                         ➕ 新增工作记录
                     </button>
                 </div>
 
                 <div class="filter-bar">
                     <div class="search-box">
-                        <input type="text" id="workSearch" placeholder="搜索工作记录..." oninput="app.filterRecords('work')">
+                        <input type="text" id="workSearch" placeholder="搜索工作记录..." oninput="filterRecords('work')">
                     </div>
-                    <select class="form-select" id="workPriorityFilter" onchange="app.filterRecords('work')" style="width: auto;">
+                    <select class="form-select" id="workPriorityFilter" onchange="filterRecords('work')" style="width: auto;">
                         <option value="">所有优先级</option>
                         <option value="high">高优先级</option>
                         <option value="medium">中优先级</option>
@@ -964,14 +846,14 @@
             <section id="thought" class="section">
                 <div class="section-header">
                     <h2 class="section-title">💭 思考总结</h2>
-                    <button class="btn btn-primary" onclick="app.openModal('thought')">
+                    <button class="btn btn-primary" onclick="openModal('thought')">
                         ➕ 新增思考总结
                     </button>
                 </div>
 
                 <div class="filter-bar">
                     <div class="search-box">
-                        <input type="text" id="thoughtSearch" placeholder="搜索思考总结..." oninput="app.filterRecords('thought')">
+                        <input type="text" id="thoughtSearch" placeholder="搜索思考总结..." oninput="filterRecords('thought')">
                     </div>
                 </div>
 
@@ -988,14 +870,14 @@
             <section id="idea" class="section">
                 <div class="section-header">
                     <h2 class="section-title">💡 灵感记录</h2>
-                    <button class="btn btn-primary" onclick="app.openModal('idea')">
+                    <button class="btn btn-primary" onclick="openModal('idea')">
                         ➕ 新增灵感
                     </button>
                 </div>
 
                 <div class="filter-bar">
                     <div class="search-box">
-                        <input type="text" id="ideaSearch" placeholder="搜索灵感..." oninput="app.filterRecords('idea')">
+                        <input type="text" id="ideaSearch" placeholder="搜索灵感..." oninput="filterRecords('idea')">
                     </div>
                 </div>
 
@@ -1010,12 +892,12 @@
         </main>
     </div>
 
-    <!-- 模态框 -->
+    <!-- 编辑/新增模态框 -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <div class="modal-header">
                 <h3 class="modal-title" id="modalTitle">新增记录</h3>
-                <button class="modal-close" onclick="app.closeModal()">&times;</button>
+                <button class="modal-close" onclick="closeModal()">×</button>
             </div>
             <div class="modal-body">
                 <form id="recordForm">
@@ -1030,7 +912,7 @@
                     <div class="form-row" id="workFields" style="display: none;">
                         <div class="form-group">
                             <label class="form-label">日期 *</label>
-                            <input type="date" class="form-input" id="workDate" required>
+                            <input type="date" class="form-input" id="workDate">
                         </div>
                         <div class="form-group">
                             <label class="form-label">优先级</label>
@@ -1067,17 +949,17 @@
 
                     <div class="form-group" id="ideaFields" style="display: none;">
                         <label class="form-label">上传图片</label>
-                        <input type="file" class="form-input" id="ideaImage" accept="image/*" multiple>
-                        <small class="form-text" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                        <input type="file" class="form-input" id="ideaImage" accept="image/*" multiple onchange="handleImageUpload()">
+                        <small style="display: block; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
                             支持上传多个图片，每个图片最大5MB
                         </small>
-                        <div id="imagePreview" class="image-preview" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+                        <div id="imagePreview" class="image-grid" style="margin-top: 1rem;"></div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="app.closeModal()">取消</button>
-                <button type="button" class="btn btn-primary" onclick="app.saveRecord()">保存</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveRecord()">保存</button>
             </div>
         </div>
     </div>
@@ -1088,114 +970,273 @@
         <span id="toastMessage">操作成功</span>
     </div>
 
+    <!-- 同步设置模态框 -->
+    <div class="modal-overlay" id="syncModal">
+        <div class="modal" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 class="modal-title">⚙️ 云端同步设置</h3>
+                <button class="modal-close" onclick="closeSyncModal()">×</button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.8;">
+                    <h4 style="margin-bottom: 0.5rem;">📋 Google Sheets 同步设置步骤：</h4>
+                    <ol style="margin-left: 1.5rem;">
+                        <li>打开 <a href="https://docs.google.com/spreadsheets" target="_blank" style="color: var(--primary-color);">Google Sheets</a>，创建新表格，命名为"塞尔夫记录"</li>
+                        <li>点击 <strong>扩展程序 → Apps Script</strong></li>
+                        <li>删除默认代码，粘贴下方提供的脚本代码</li>
+                        <li><strong>重要：</strong>在代码第1行，将 <code>YOUR_SHEET_URL_HERE</code> 替换为你的 Google Sheets 表格 URL</li>
+                        <li>点击 <strong>部署 → 新建部署</strong>，类型选择"Web应用"</li>
+                        <li>执行身份选择"我"，有权访问的用户选择"任何人"</li>
+                        <li>点击"部署"后复制生成的 <strong>Web App URL</strong></li>
+                        <li>将 Web App URL 粘贴到下方并保存</li>
+                    </ol>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Google Apps Script Web App URL</label>
+                    <input type="url" class="form-input" id="webAppUrl" placeholder="https://script.google.com/macros/s/.../exec">
+                    <small style="color: var(--text-secondary); font-size: 0.8rem; display: block; margin-top: 0.25rem;">
+                        从 Apps Script 部署后获取的 Web App URL
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Apps Script 脚本代码（点击复制）</label>
+                    <button class="btn btn-sm btn-secondary" onclick="copyScriptCode()" style="margin-bottom: 0.5rem;">📋 复制代码</button>
+                    <textarea class="form-textarea" id="scriptCode" readonly style="height: 400px; font-family: monospace; font-size: 0.8rem; background: #f8f9fa;">var SHEET_URL = 'YOUR_SHEET_URL_HERE';
+
+function doGet(e) {
+  return handleRequest(e);
+}
+
+function doPost(e) {
+  return handleRequest(e);
+}
+
+function handleRequest(e) {
+  var ss = SpreadsheetApp.openByUrl(SHEET_URL);
+  var sheet = ss.getSheetByName('Data') || ss.insertSheet('Data');
+  
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['id', 'type', 'title', 'content', 'priority', 'importance', 'date', 'tags', 'images', 'createdAt', 'updatedAt']);
+  }
+  
+  var method = e.method;
+  
+  if (method === 'GET') {
+    try {
+      var data = sheet.getDataRange().getValues();
+      var headers = data.shift();
+      var result = [];
+      
+      for (var i = 0; i < data.length; i++) {
+        var row = {};
+        for (var j = 0; j < headers.length; j++) {
+          var value = data[i][j];
+          if (headers[j] === 'tags' || headers[j] === 'images') {
+            try { value = JSON.parse(value); } catch (e) {}
+          }
+          row[headers[j]] = value;
+        }
+        result.push(row);
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify(result))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({error: err.toString()}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  
+  if (method === 'POST') {
+    try {
+      var postData = JSON.parse(e.postData.contents);
+      var headers = ['id', 'type', 'title', 'content', 'priority', 'importance', 'date', 'tags', 'images', 'createdAt', 'updatedAt'];
+      
+      if (sheet.getLastRow() > 1) {
+        sheet.deleteRows(2, sheet.getLastRow() - 1);
+      }
+      
+      for (var type in postData) {
+        for (var i = 0; i < postData[type].length; i++) {
+          var record = postData[type][i];
+          record.type = type;
+          
+          var row = [];
+          for (var h = 0; h < headers.length; h++) {
+            var value = record[headers[h]];
+            if (Array.isArray(value)) {
+              row.push(JSON.stringify(value));
+            } else {
+              row.push(value || '');
+            }
+          }
+          
+          sheet.appendRow(row);
+        }
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify({success: true, count: sheet.getLastRow() - 1}))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({success: false, error: err.toString()}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({error: 'Unknown method'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</textarea>
+                </div>
+
+                <div style="background: #e7f3ff; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                    <p style="margin: 0; font-size: 0.85rem; color: #0066cc;">
+                        💡 <strong>提示：</strong>首次使用建议先点击"同步云端"保存数据到 Google Sheets，之后在另一台设备上点击"从云端加载"获取数据。
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeSyncModal()">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveSyncSettings()">保存设置</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // 应用主类
-        class WorkRecordSystem {
-            constructor() {
-                this.data = this.loadData();
-                this.currentTab = 'dashboard';
-                this.init();
-            }
+        let data = loadData();
+        let uploadedImages = [];
 
-            init() {
-                this.updateStats();
-                this.renderAllLists();
-                this.setupEventListeners();
+        // 检查登录状态
+        function checkLogin() {
+            const isLoggedIn = sessionStorage.getItem('leeseflLogin') === 'true';
+            if (isLoggedIn) {
+                document.getElementById('loginPage').classList.add('hidden');
+                init();
+            } else {
+                document.getElementById('loginPage').classList.remove('hidden');
+            }
+        }
+
+        // 处理登录
+        function handleLogin(event) {
+            event.preventDefault();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (password === '135790') {
+                sessionStorage.setItem('leeseflLogin', 'true');
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('loginError').style.display = 'none';
+                init();
+                return false;
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('loginPassword').value = '';
+                return false;
+            }
+        }
+
+        // 初始化
+        function init() {
+            try {
+                updateStats();
+                renderAllLists();
+                setupEventListeners();
                 
-                // 设置默认日期为今天
-                document.getElementById('workDate').valueAsDate = new Date();
-            }
-
-            setupEventListeners() {
-                // 点击模态框外部关闭
-                document.getElementById('modal').addEventListener('click', (e) => {
-                    if (e.target.id === 'modal') {
-                        this.closeModal();
-                    }
-                });
-
-                // ESC键关闭模态框
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        this.closeModal();
-                    }
-                });
-            }
-
-            // 加载数据
-            loadData() {
-                const defaultData = {
-                    work: [],
-                    thought: [],
-                    idea: []
-                };
-                
-                try {
-                    const stored = localStorage.getItem('workRecordData');
-                    return stored ? JSON.parse(stored) : defaultData;
-                } catch (e) {
-                    console.error('加载数据失败:', e);
-                    return defaultData;
+                // 设置默认日期为今天（如果元素存在）
+                const workDateEl = document.getElementById('workDate');
+                if (workDateEl) {
+                    workDateEl.valueAsDate = new Date();
                 }
+            } catch (e) {
+                console.error('初始化出错:', e);
             }
+        }
 
-            // 保存数据
-            saveData() {
-                try {
-                    localStorage.setItem('workRecordData', JSON.stringify(this.data));
-                } catch (e) {
-                    console.error('保存数据失败:', e);
-                    this.showToast('保存失败，可能是存储空间不足', 'error');
-                }
+        // 加载数据
+        function loadData() {
+            const defaultData = {
+                work: [],
+                thought: [],
+                idea: []
+            };
+            
+            try {
+                const stored = localStorage.getItem('workRecordData');
+                return stored ? JSON.parse(stored) : defaultData;
+            } catch (e) {
+                console.error('加载数据失败:', e);
+                return defaultData;
             }
+        }
 
-            // 切换标签页
-            switchTab(tab) {
-                this.currentTab = tab;
+        // 保存数据
+        function saveData() {
+            try {
+                localStorage.setItem('workRecordData', JSON.stringify(data));
+            } catch (e) {
+                console.error('保存数据失败:', e);
+                showToast('保存失败', 'error');
+            }
+        }
+
+        // 切换标签页
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.nav-link').classList.add('active');
+            
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tab).classList.add('active');
+            
+            if (tab === 'dashboard') {
+                updateStats();
+                renderRecentRecords();
+            } else {
+                renderList(tab);
+            }
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            try {
+                const workCountEl = document.getElementById('workCount');
+                const thoughtCountEl = document.getElementById('thoughtCount');
+                const ideaCountEl = document.getElementById('ideaCount');
                 
-                // 更新导航状态
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.classList.remove('active');
-                });
-                event.target.closest('.nav-link').classList.add('active');
-                
-                // 显示对应内容
-                document.querySelectorAll('.section').forEach(section => {
-                    section.classList.remove('active');
-                });
-                document.getElementById(tab).classList.add('active');
-                
-                // 刷新数据
-                if (tab === 'dashboard') {
-                    this.updateStats();
-                    this.renderRecentRecords();
-                } else {
-                    this.renderList(tab);
-                }
+                if (workCountEl) workCountEl.textContent = data.work.length;
+                if (thoughtCountEl) thoughtCountEl.textContent = data.thought.length;
+                if (ideaCountEl) ideaCountEl.textContent = data.idea.length;
+            } catch (e) {
+                console.error('更新统计出错:', e);
             }
+        }
 
-            // 更新统计数据
-            updateStats() {
-                document.getElementById('workCount').textContent = this.data.work.length;
-                document.getElementById('thoughtCount').textContent = this.data.thought.length;
-                document.getElementById('ideaCount').textContent = this.data.idea.length;
+        // 渲染所有列表
+        function renderAllLists() {
+            try {
+                renderRecentRecords();
+                renderList('work');
+                renderList('thought');
+                renderList('idea');
+            } catch (e) {
+                console.error('渲染列表出错:', e);
             }
+        }
 
-            // 渲染所有列表
-            renderAllLists() {
-                this.renderRecentRecords();
-                this.renderList('work');
-                this.renderList('thought');
-                this.renderList('idea');
-            }
-
-            // 渲染最近记录
-            renderRecentRecords() {
+        // 渲染最近记录
+        function renderRecentRecords() {
+            try {
                 const container = document.getElementById('recentRecords');
+                if (!container) return;
+                
                 const allRecords = [
-                    ...this.data.work.map(r => ({ ...r, type: 'work' })),
-                    ...this.data.thought.map(r => ({ ...r, type: 'thought' })),
-                    ...this.data.idea.map(r => ({ ...r, type: 'idea' }))
+                    ...data.work.map(r => ({ ...r, type: 'work' })),
+                    ...data.thought.map(r => ({ ...r, type: 'thought' })),
+                    ...data.idea.map(r => ({ ...r, type: 'idea' }))
                 ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
 
                 if (allRecords.length === 0) {
@@ -1209,17 +1250,25 @@
                     return;
                 }
 
-                container.innerHTML = allRecords.map(record => this.createRecordHTML(record, record.type)).join('');
+                container.innerHTML = allRecords.map(record => createRecordHTML(record, record.type)).join('');
+            } catch (e) {
+                console.error('渲染最近记录出错:', e);
             }
+        }
 
-            // 渲染列表
-            renderList(type) {
+        // 渲染列表
+        function renderList(type) {
+            try {
                 const container = document.getElementById(type + 'List');
-                const records = this.data[type];
+                if (!container) return;
                 
-                // 应用过滤器
-                const searchTerm = document.getElementById(type + 'Search')?.value.toLowerCase() || '';
-                const priorityFilter = document.getElementById(type + 'PriorityFilter')?.value || '';
+                const records = data[type];
+                
+                const searchEl = document.getElementById(type + 'Search');
+                const priorityEl = document.getElementById(type + 'PriorityFilter');
+                
+                const searchTerm = searchEl ? searchEl.value.toLowerCase() : '';
+                const priorityFilter = priorityEl ? priorityEl.value : '';
                 
                 let filteredRecords = records;
                 
@@ -1235,7 +1284,6 @@
                     filteredRecords = filteredRecords.filter(r => r.priority === priorityFilter);
                 }
                 
-                // 排序：最新的在前
                 filteredRecords.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
                 if (filteredRecords.length === 0) {
@@ -1255,412 +1303,500 @@
                     return;
                 }
 
-                container.innerHTML = filteredRecords.map(record => this.createRecordHTML(record, type)).join('');
+                container.innerHTML = filteredRecords.map(record => createRecordHTML(record, type)).join('');
+            } catch (e) {
+                console.error('渲染列表出错:', e);
             }
+        }
 
-            // 创建记录HTML
-            createRecordHTML(record, type) {
-                const typeConfig = {
-                    work: { icon: '💼', class: 'work' },
-                    thought: { icon: '💭', class: 'thought' },
-                    idea: { icon: '💡', class: 'idea' }
+        // 创建记录HTML
+        function createRecordHTML(record, type) {
+            const typeConfig = {
+                work: { icon: '💼', class: 'work' },
+                thought: { icon: '💭', class: 'thought' },
+                idea: { icon: '💡', class: 'idea' }
+            };
+            
+            const config = typeConfig[type];
+            const date = new Date(record.createdAt);
+            const dateStr = date.toLocaleDateString('zh-CN');
+            const timeStr = date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            
+            let badgeHtml = '';
+            
+            if (type === 'work' && record.priority) {
+                const priorityMap = {
+                    high: { class: 'priority-high', text: '高' },
+                    medium: { class: 'priority-medium', text: '中' },
+                    low: { class: 'priority-low', text: '低' }
                 };
-                
-                const config = typeConfig[type];
-                const date = new Date(record.createdAt);
-                const dateStr = date.toLocaleDateString('zh-CN');
-                const timeStr = date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-                
-                let priorityBadge = '';
-                if (type === 'work' && record.priority) {
-                    const priorityMap = {
-                        high: { class: 'priority-high', text: '高' },
-                        medium: { class: 'priority-medium', text: '中' },
-                        low: { class: 'priority-low', text: '低' }
-                    };
-                    const p = priorityMap[record.priority];
-                    priorityBadge = `<span class="priority ${p.class}">${p.text}</span>`;
-                }
-                
-                let importanceBadge = '';
-                if (type === 'thought' && record.importance) {
-                    const importanceMap = {
-                        important: { class: 'priority-high', text: '很重要' },
-                        highlight: { class: 'priority-medium', text: '有点亮点' },
-                        normal: { class: 'priority-low', text: '普通' }
-                    };
-                    const imp = importanceMap[record.importance];
-                    importanceBadge = `<span class="priority ${imp.class}">${imp.text}</span>`;
-                }
-                
-                const tagsHtml = record.tags ? record.tags.map(tag => 
-                    `<span class="tag tag-primary">${tag}</span>`
-                ).join(' ') : '';
+                const p = priorityMap[record.priority];
+                badgeHtml = `<span class="priority ${p.class}">${p.text}</span>`;
+            } else if (type === 'thought' && record.importance) {
+                const importanceMap = {
+                    important: { class: 'priority-high', text: '很重要' },
+                    highlight: { class: 'priority-medium', text: '有点亮点' },
+                    normal: { class: 'priority-low', text: '普通' }
+                };
+                const imp = importanceMap[record.importance];
+                badgeHtml = `<span class="priority ${imp.class}">${imp.text}</span>`;
+            }
+            
+            const tagsHtml = record.tags ? record.tags.map(tag => 
+                `<span class="tag tag-primary">${tag}</span>`
+            ).join(' ') : '';
 
-                const imagesHtml = type === 'idea' && record.images ? `
-                    <div class="image-grid">
-                        ${record.images.map(img => `
-                            <div class="image-item">
-                                <img src="${img}" alt="灵感图片" onclick="this.style.cursor = 'pointer'; window.open('${img}', '_blank');">
-                            </div>
-                        `).join('')}
-                    </div>
-                ` : '';
-
-                return `
-                    <div class="record-item ${config.class}">
-                        <div class="record-header">
-                            <div>
-                                <span class="record-title">${config.icon} ${record.title}</span>
-                                ${priorityBadge}
-                                ${importanceBadge}
-                            </div>
-                            <div class="record-meta">
-                                <span>📅 ${record.date || dateStr}</span>
-                                <span>🕐 ${timeStr}</span>
-                            </div>
+            const imagesHtml = type === 'idea' && record.images ? `
+                <div class="image-grid">
+                    ${record.images.map(img => `
+                        <div class="image-item">
+                            <img src="${img}" alt="灵感图片" onclick="window.open('${img}', '_blank');">
                         </div>
-                        <div class="record-content">${record.content}</div>
-                        ${tagsHtml ? `<div style="margin-top: 0.75rem;">${tagsHtml}</div>` : ''}
-                        ${imagesHtml}
-                        <div class="record-actions">
-                            <button class="btn btn-sm btn-secondary" onclick="app.editRecord('${type}', '${record.id}')">✏️ 编辑</button>
-                            <button class="btn btn-sm btn-danger" onclick="app.deleteRecord('${type}', '${record.id}')">🗑️ 删除</button>
+                    `).join('')}
+                </div>
+            ` : '';
+
+            return `
+                <div class="record-item ${config.class}">
+                    <div class="record-header">
+                        <div>
+                            <span class="record-title">${config.icon} ${record.title}</span>
+                            ${badgeHtml}
+                        </div>
+                        <div class="record-meta">
+                            <span>📅 ${record.date || dateStr}</span>
+                            <span>🕐 ${timeStr}</span>
                         </div>
                     </div>
-                `;
-            }
+                    <div class="record-content">${record.content}</div>
+                    ${tagsHtml ? `<div style="margin-top: 0.75rem;">${tagsHtml}</div>` : ''}
+                    ${imagesHtml}
+                    <div class="record-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="editRecord('${type}', '${record.id}')">✏️ 编辑</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteRecord('${type}', '${record.id}')">🗑️ 删除</button>
+                    </div>
+                </div>
+            `;
+        }
 
-            // 打开模态框
-            openModal(type, recordId = null) {
-                const modal = document.getElementById('modal');
-                const form = document.getElementById('recordForm');
-                const titleMap = {
-                    work: recordId ? '编辑工作记录' : '新增工作记录',
-                    thought: recordId ? '编辑思考总结' : '新增思考总结',
-                    idea: recordId ? '编辑灵感记录' : '新增灵感记录'
-                };
-                
-                document.getElementById('modalTitle').textContent = titleMap[type];
-                document.getElementById('recordType').value = type;
-                document.getElementById('workFields').style.display = type === 'work' ? 'grid' : 'none';
-                document.getElementById('thoughtFields').style.display = type === 'thought' ? 'grid' : 'none';
-                document.getElementById('ideaFields').style.display = type === 'idea' ? 'block' : 'none';
-                
-                // 清空图片预览
-                document.getElementById('imagePreview').innerHTML = '';
-                
-                // 重新绑定图片上传事件
-                const imageInput = document.getElementById('ideaImage');
-                imageInput.onchange = () => this.handleImageUpload();
-                
-                if (recordId) {
-                    const record = this.data[type].find(r => r.id === recordId);
-                    if (record) {
-                        document.getElementById('recordId').value = record.id;
-                        document.getElementById('recordTitle').value = record.title;
-                        document.getElementById('recordContent').value = record.content;
-                        document.getElementById('recordTags').value = record.tags ? record.tags.join(', ') : '';
-                        
-                        if (type === 'work') {
-                            document.getElementById('workDate').value = record.date || new Date().toISOString().split('T')[0];
-                            document.getElementById('workPriority').value = record.priority || '';
-                        }
-                        
-                        if (type === 'thought') {
-                            document.getElementById('thoughtImportance').value = record.importance || '';
-                        }
-                        
-                        if (type === 'idea' && record.images) {
-                            // 显示已上传的图片
-                            const previewContainer = document.getElementById('imagePreview');
-                            record.images.forEach((imageData, index) => {
-                                const previewItem = document.createElement('div');
-                                previewItem.className = 'image-preview-item';
-                                previewItem.innerHTML = `
-                                    <img src="${imageData}" alt="已上传图片">
-                                    <button class="remove-image" onclick="app.removeImage(${index})">×</button>
-                                `;
-                                previewContainer.appendChild(previewItem);
-                            });
-                        }
+        // 打开模态框
+        function openModal(type, recordId = null) {
+            document.getElementById('modal').classList.add('active');
+            
+            const titleMap = {
+                work: recordId ? '编辑工作记录' : '新增工作记录',
+                thought: recordId ? '编辑思考总结' : '新增思考总结',
+                idea: recordId ? '编辑灵感记录' : '新增灵感记录'
+            };
+            
+            document.getElementById('modalTitle').textContent = titleMap[type];
+            document.getElementById('recordType').value = type;
+            document.getElementById('workFields').style.display = type === 'work' ? 'grid' : 'none';
+            document.getElementById('thoughtFields').style.display = type === 'thought' ? 'grid' : 'none';
+            document.getElementById('ideaFields').style.display = type === 'idea' ? 'block' : 'none';
+            
+            uploadedImages = [];
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('ideaImage').value = '';
+            
+            if (recordId) {
+                const record = data[type].find(r => r.id === recordId);
+                if (record) {
+                    document.getElementById('recordId').value = record.id;
+                    document.getElementById('recordTitle').value = record.title;
+                    document.getElementById('recordContent').value = record.content;
+                    document.getElementById('recordTags').value = record.tags ? record.tags.join(', ') : '';
+                    
+                    if (type === 'work') {
+                        document.getElementById('workDate').value = record.date || new Date().toISOString().split('T')[0];
+                        document.getElementById('workPriority').value = record.priority || '';
                     }
-                } else {
-                    form.reset();
-                    document.getElementById('recordId').value = '';
-                    document.getElementById('workDate').valueAsDate = new Date();
-                    document.getElementById('workPriority').value = '';
-                    document.getElementById('thoughtImportance').value = '';
-                    document.getElementById('ideaImage').value = '';
-                    document.getElementById('imagePreview').innerHTML = '';
+                    if (type === 'thought') {
+                        document.getElementById('thoughtImportance').value = record.importance || '';
+                    }
+                    if (type === 'idea' && record.images) {
+                        uploadedImages = [...record.images];
+                        renderImagePreview();
+                    }
                 }
+            } else {
+                document.getElementById('recordId').value = '';
+                document.getElementById('recordTitle').value = '';
+                document.getElementById('recordContent').value = '';
+                document.getElementById('recordTags').value = '';
                 
-                modal.classList.add('active');
-                document.getElementById('recordTitle').focus();
+                const workDateEl = document.getElementById('workDate');
+                if (workDateEl) {
+                    workDateEl.valueAsDate = new Date();
+                }
             }
+            
+            document.getElementById('recordTitle').focus();
+        }
 
-            // 关闭模态框
-            closeModal() {
-                document.getElementById('modal').classList.remove('active');
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // 保存记录
+        function saveRecord() {
+            const type = document.getElementById('recordType').value;
+            const id = document.getElementById('recordId').value;
+            const title = document.getElementById('recordTitle').value.trim();
+            const content = document.getElementById('recordContent').value.trim();
+            const tagsStr = document.getElementById('recordTags').value.trim();
+            
+            if (!title || !content) {
+                showToast('请填写标题和内容', 'error');
+                return;
             }
+            
+            const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+            
+            const record = {
+                id: id || Date.now().toString(),
+                title,
+                content,
+                tags,
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (!id) {
+                record.createdAt = new Date().toISOString();
+            } else {
+                const existing = data[type].find(r => r.id === id);
+                if (existing) {
+                    record.createdAt = existing.createdAt;
+                }
+            }
+            
+            if (type === 'work') {
+                record.date = document.getElementById('workDate').value;
+                record.priority = document.getElementById('workPriority').value;
+            }
+            if (type === 'thought') {
+                record.importance = document.getElementById('thoughtImportance').value;
+            }
+            if (type === 'idea') {
+                record.images = uploadedImages.length > 0 ? uploadedImages : undefined;
+            }
+            
+            if (id) {
+                const index = data[type].findIndex(r => r.id === id);
+                if (index !== -1) {
+                    data[type][index] = record;
+                }
+            } else {
+                data[type].push(record);
+            }
+            
+            saveData();
+            closeModal();
+            updateStats();
+            renderAllLists();
+            showToast(id ? '记录已更新' : '记录已添加', 'success');
+        }
 
-            // 保存记录
-            saveRecord() {
-                const type = document.getElementById('recordType').value;
-                const id = document.getElementById('recordId').value;
-                const title = document.getElementById('recordTitle').value.trim();
-                const content = document.getElementById('recordContent').value.trim();
-                const tagsStr = document.getElementById('recordTags').value.trim();
-                
-                if (!title || !content) {
-                    this.showToast('请填写标题和内容', 'error');
+        // 编辑记录
+        function editRecord(type, id) {
+            openModal(type, id);
+        }
+
+        // 删除记录
+        function deleteRecord(type, id) {
+            if (!confirm('确定要删除这条记录吗？此操作不可恢复。')) {
+                return;
+            }
+            
+            data[type] = data[type].filter(r => r.id !== id);
+            saveData();
+            updateStats();
+            renderAllLists();
+            showToast('记录已删除', 'success');
+        }
+
+        // 筛选记录
+        function filterRecords(type) {
+            renderList(type);
+        }
+
+        // 处理图片上传
+        function handleImageUpload() {
+            const input = document.getElementById('ideaImage');
+            const files = input.files;
+            
+            if (files.length === 0) return;
+            
+            Array.from(files).forEach(file => {
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('图片大小不能超过5MB', 'error');
                     return;
                 }
                 
-                const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
-                
-                const record = {
-                    id: id || Date.now().toString(),
-                    title,
-                    content,
-                    tags,
-                    updatedAt: new Date().toISOString()
-                };
-                
-                if (!id) {
-                    record.createdAt = new Date().toISOString();
-                } else {
-                    const existing = this.data[type].find(r => r.id === id);
-                    if (existing) {
-                        record.createdAt = existing.createdAt;
-                    }
-                }
-                
-                if (type === 'work') {
-                    record.date = document.getElementById('workDate').value;
-                    record.priority = document.getElementById('workPriority').value;
-                }
-                
-                if (type === 'thought') {
-                    record.importance = document.getElementById('thoughtImportance').value;
-                }
-                
-                if (type === 'idea') {
-                    // 处理图片
-                    record.images = this.getImagesFromPreview();
-                }
-                
-                if (id) {
-                    const index = this.data[type].findIndex(r => r.id === id);
-                    if (index !== -1) {
-                        this.data[type][index] = record;
-                    }
-                } else {
-                    this.data[type].push(record);
-                }
-                
-                this.saveData();
-                this.closeModal();
-                this.updateStats();
-                this.renderAllLists();
-                this.showToast(id ? '记录已更新' : '记录已添加', 'success');
-            }
-
-            // 编辑记录
-            editRecord(type, id) {
-                this.openModal(type, id);
-            }
-
-            // 删除记录
-            deleteRecord(type, id) {
-                if (!confirm('确定要删除这条记录吗？此操作不可恢复。')) {
+                if (!file.type.startsWith('image/')) {
+                    showToast('请上传图片文件', 'error');
                     return;
                 }
-                
-                this.data[type] = this.data[type].filter(r => r.id !== id);
-                this.saveData();
-                this.updateStats();
-                this.renderAllLists();
-                this.showToast('记录已删除', 'success');
-            }
-
-            // 过滤记录
-            filterRecords(type) {
-                this.renderList(type);
-            }
-
-            // 导出数据
-            exportData() {
-                const dataStr = JSON.stringify(this.data, null, 2);
-                const blob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `工作记录备份_${new Date().toLocaleDateString('zh-CN')}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                this.showToast('数据导出成功', 'success');
-            }
-
-            // 导入数据
-            importData(input) {
-                const file = input.files[0];
-                if (!file) return;
                 
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    try {
-                        const imported = JSON.parse(e.target.result);
-                        
-                        // 验证数据结构
-                        if (!imported.work || !imported.thought || !imported.idea) {
-                            throw new Error('数据格式不正确');
+                    uploadedImages.push(e.target.result);
+                    renderImagePreview();
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            input.value = '';
+        }
+
+        // 渲染图片预览
+        function renderImagePreview() {
+            const container = document.getElementById('imagePreview');
+            if (!container) return;
+            
+            container.innerHTML = uploadedImages.map((img, idx) => `
+                <div class="image-item" style="position: relative;">
+                    <img src="${img}" alt="预览" style="cursor: default;">
+                    <button onclick="removeImage(${idx})" style="position: absolute; top: -8px; right: -8px; background: var(--danger-color); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 16px; cursor: pointer;">×</button>
+                </div>
+            `).join('');
+        }
+
+        // 移除图片
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            renderImagePreview();
+        }
+
+        // 导出数据
+        function exportData() {
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `工作记录备份_${new Date().toLocaleDateString('zh-CN')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('数据导出成功', 'success');
+        }
+
+        // 导入数据
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    
+                    if (!imported.work || !imported.thought || !imported.idea) {
+                        throw new Error('数据格式不正确');
+                    }
+                    
+                    const mergeRecords = (existing, incoming) => {
+                        const existingIds = new Set(existing.map(r => r.id));
+                        const newRecords = incoming.filter(r => !existingIds.has(r.id));
+                        return [...existing, ...newRecords];
+                    };
+                    
+                    data.work = mergeRecords(data.work, imported.work);
+                    data.thought = mergeRecords(data.thought, imported.thought);
+                    data.idea = mergeRecords(data.idea, imported.idea);
+                    
+                    saveData();
+                    updateStats();
+                    renderAllLists();
+                    showToast('数据导入成功', 'success');
+                } catch (err) {
+                    showToast('导入失败：' + err.message, 'error');
+                }
+                input.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // 设置事件监听
+        function setupEventListeners() {
+            try {
+                const modal = document.getElementById('modal');
+                if (modal) {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target.id === 'modal') {
+                            closeModal();
                         }
-                        
-                        // 合并数据（去重）
+                    });
+                }
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                    }
+                });
+            } catch (e) {
+                console.error('设置事件监听出错:', e);
+            }
+        }
+
+        // 显示提示
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const iconMap = {
+                success: '✓',
+                error: '✗'
+            };
+            
+            toast.className = 'toast ' + type;
+            document.getElementById('toastIcon').textContent = iconMap[type];
+            document.getElementById('toastMessage').textContent = message;
+            
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // 初始化检查登录
+        checkLogin();
+
+        // ========== 云端同步功能 ==========
+
+        let syncSettings = JSON.parse(localStorage.getItem('syncSettings') || '{}');
+
+        function openSyncModal() {
+            document.getElementById('syncModal').classList.add('active');
+            document.getElementById('webAppUrl').value = syncSettings.webAppUrl || '';
+        }
+
+        function closeSyncModal() {
+            document.getElementById('syncModal').classList.remove('active');
+        }
+
+        function copyScriptCode() {
+            const code = document.getElementById('scriptCode').value;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('脚本代码已复制到剪贴板！', 'success');
+            }).catch(() => {
+                showToast('复制失败，请手动复制', 'error');
+            });
+        }
+
+        function saveSyncSettings() {
+            const webAppUrl = document.getElementById('webAppUrl').value.trim();
+            
+            if (!webAppUrl) {
+                showToast('请输入 Web App URL', 'error');
+                return;
+            }
+            
+            if (!webAppUrl.includes('script.google.com')) {
+                showToast('Web App URL 格式不正确', 'error');
+                return;
+            }
+            
+            syncSettings.webAppUrl = webAppUrl;
+            localStorage.setItem('syncSettings', JSON.stringify(syncSettings));
+            closeSyncModal();
+            showToast('同步设置已保存', 'success');
+        }
+
+        function syncToCloud() {
+            if (!syncSettings.webAppUrl) {
+                showToast('请先在同步设置中配置 Web App URL', 'error');
+                openSyncModal();
+                return;
+            }
+
+            const toast = showToast('正在同步到云端...', 'info');
+
+            fetch(syncSettings.webAppUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                showToast('数据已同步到云端！', 'success');
+            })
+            .catch(error => {
+                console.error('同步失败:', error);
+                showToast('同步失败：' + error.message, 'error');
+            });
+        }
+
+        function loadFromCloud() {
+            if (!syncSettings.webAppUrl) {
+                showToast('请先在同步设置中配置 Web App URL', 'error');
+                openSyncModal();
+                return;
+            }
+
+            showToast('正在从云端加载...', 'info');
+
+            fetch(syncSettings.webAppUrl, {
+                method: 'GET',
+                mode: 'cors'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('网络响应不正常');
+                }
+                return response.json();
+            })
+            .then(cloudData => {
+                if (!Array.isArray(cloudData) || cloudData.length === 0) {
+                    showToast('云端暂无数据', 'error');
+                    return;
+                }
+
+                const newData = { work: [], thought: [], idea: [] };
+                
+                cloudData.forEach(record => {
+                    if (record.type && newData[record.type]) {
+                        newData[record.type].push(record);
+                    }
+                });
+
+                if (data.work.length === 0 && data.thought.length === 0 && data.idea.length === 0) {
+                    data = newData;
+                    saveData();
+                    updateStats();
+                    renderAllLists();
+                    showToast('已从云端加载 ' + (newData.work.length + newData.thought.length + newData.idea.length) + ' 条记录！', 'success');
+                } else {
+                    if (confirm('本地已有数据，是否合并？\n\n"确定" = 合并云端数据到本地\n"取消" = 用云端数据覆盖本地')) {
                         const mergeRecords = (existing, incoming) => {
                             const existingIds = new Set(existing.map(r => r.id));
                             const newRecords = incoming.filter(r => !existingIds.has(r.id));
                             return [...existing, ...newRecords];
                         };
                         
-                        this.data.work = mergeRecords(this.data.work, imported.work);
-                        this.data.thought = mergeRecords(this.data.thought, imported.thought);
-                        this.data.idea = mergeRecords(this.data.idea, imported.idea);
+                        data.work = mergeRecords(data.work, newData.work);
+                        data.thought = mergeRecords(data.thought, newData.thought);
+                        data.idea = mergeRecords(data.idea, newData.idea);
                         
-                        this.saveData();
-                        this.updateStats();
-                        this.renderAllLists();
-                        this.showToast('数据导入成功', 'success');
-                    } catch (err) {
-                        this.showToast('导入失败：' + err.message, 'error');
+                        saveData();
+                        updateStats();
+                        renderAllLists();
+                        showToast('已合并云端数据！', 'success');
+                    } else {
+                        data = newData;
+                        saveData();
+                        updateStats();
+                        renderAllLists();
+                        showToast('已用云端数据覆盖本地！', 'success');
                     }
-                    input.value = '';
-                };
-                reader.readAsText(file);
-            }
-
-            // 显示提示
-            showToast(message, type = 'success') {
-                const toast = document.getElementById('toast');
-                const iconMap = {
-                    success: '✓',
-                    error: '✗',
-                    warning: '⚠'
-                };
-                
-                toast.className = 'toast ' + type;
-                document.getElementById('toastIcon').textContent = iconMap[type];
-                document.getElementById('toastMessage').textContent = message;
-                
-                toast.classList.add('active');
-                
-                setTimeout(() => {
-                    toast.classList.remove('active');
-                }, 3000);
-            }
-
-            // 处理图片上传
-            handleImageUpload() {
-                const input = document.getElementById('ideaImage');
-                const files = input.files;
-                const previewContainer = document.getElementById('imagePreview');
-                
-                if (files.length === 0) return;
-                
-                Array.from(files).forEach(file => {
-                    if (file.size > 5 * 1024 * 1024) {
-                        this.showToast('图片大小不能超过5MB', 'error');
-                        return;
-                    }
-                    
-                    if (!file.type.startsWith('image/')) {
-                        this.showToast('请上传图片文件', 'error');
-                        return;
-                    }
-                    
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const imageData = e.target.result;
-                        const previewItem = document.createElement('div');
-                        previewItem.className = 'image-preview-item';
-                        previewItem.innerHTML = `
-                            <img src="${imageData}" alt="图片预览">
-                            <button class="remove-image" onclick="app.removeImage(this)">×</button>
-                        `;
-                        previewContainer.appendChild(previewItem);
-                    };
-                    reader.readAsDataURL(file);
-                });
-                
-                // 清空文件输入，允许重复选择同一个文件
-                input.value = '';
-            }
-
-            // 从预览中获取图片数据
-            getImagesFromPreview() {
-                const previewItems = document.querySelectorAll('.image-preview-item');
-                const images = [];
-                
-                previewItems.forEach(item => {
-                    const img = item.querySelector('img');
-                    if (img) {
-                        images.push(img.src);
-                    }
-                });
-                
-                return images.length > 0 ? images : undefined;
-            }
-
-            // 移除图片
-            removeImage(element) {
-                if (typeof element === 'number') {
-                    // 编辑模式下根据索引移除
-                    const previewItems = document.querySelectorAll('.image-preview-item');
-                    if (previewItems[element]) {
-                        previewItems[element].remove();
-                    }
-                } else {
-                    // 上传模式下移除当前图片
-                    element.closest('.image-preview-item').remove();
                 }
-            }
+            })
+            .catch(error => {
+                console.error('加载失败:', error);
+                showToast('加载失败：' + error.message + '\n\n请确保：\n1. 已开启科学上网\n2. 正确配置了 Web App URL\n3. Google Apps Script 已正确部署', 'error');
+            });
         }
-
-        // 初始化应用
-        const app = new WorkRecordSystem();
-        
-        // 检查登录状态
-        function checkLogin() {
-            const isLoggedIn = sessionStorage.getItem('leeseflLogin') === 'true';
-            if (isLoggedIn) {
-                document.getElementById('loginPage').classList.add('hidden');
-            } else {
-                document.getElementById('loginPage').classList.remove('hidden');
-            }
-        }
-        
-        // 处理登录
-        function handleLogin(event) {
-            event.preventDefault();
-            const password = document.getElementById('loginPassword').value;
-            
-            if (password === '135790') {
-                sessionStorage.setItem('leeseflLogin', 'true');
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('loginError').style.display = 'none';
-                return false;
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginPassword').value = '';
-                return false;
-            }
-        }
-        
-        // 初始化时检查登录状态
-        checkLogin();
     </script>
 </body>
 </html>
