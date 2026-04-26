@@ -666,6 +666,138 @@
             display: none;
         }
 
+        /* 客户事项跟进表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: var(--bg-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .data-table th:hover {
+            background: #e8ecf1;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(74, 144, 217, 0.05);
+        }
+
+        .data-table td {
+            color: var(--text-secondary);
+        }
+
+        .sort-icon {
+            font-size: 0.75rem;
+            margin-left: 0.25rem;
+            color: var(--text-secondary);
+        }
+
+        .sort-icon.asc::after {
+            content: '↑';
+        }
+
+        .sort-icon.desc::after {
+            content: '↓';
+        }
+
+        .urgency-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .urgency-high {
+            background: rgba(217, 83, 79, 0.1);
+            color: var(--danger-color);
+        }
+
+        .urgency-medium {
+            background: rgba(240, 173, 78, 0.1);
+            color: var(--warning-color);
+        }
+
+        .urgency-low {
+            background: rgba(92, 184, 92, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .pagination-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-color);
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .pagination-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pagination-controls .btn {
+            min-width: 60px;
+        }
+
+        #customerPageInfo {
+            padding: 0 1rem;
+            color: var(--text-secondary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .loading-state {
+            color: var(--text-secondary);
+        }
+
+        .loading-state::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* 响应式 */
         @media (max-width: 768px) {
             .main-container {
@@ -704,16 +836,16 @@
                 <h1 class="login-title">塞尔夫记录</h1>
                 <p class="login-subtitle">Leeself's Reflection</p>
             </div>
-            <form class="login-form" onsubmit="handleLogin(event)">
+            <div class="login-form">
                 <div class="form-group">
                     <label class="form-label">密码</label>
-                    <input type="password" class="form-input" id="loginPassword" placeholder="请输入访问密码..." required>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="请输入访问密码...">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <button type="button" class="btn btn-primary" style="width: 100%;" id="loginBtn">
                     登 录
                 </button>
                 <p id="loginError" class="login-error" style="display: none;">密码错误，请重试</p>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -773,6 +905,12 @@
                             <span>灵感记录</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchTab('customer')">
+                            <span>📋</span>
+                            <span>客户事项跟进</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </aside>
@@ -823,7 +961,10 @@
 
                 <div class="filter-bar">
                     <div class="search-box">
-                        <input type="text" id="workSearch" placeholder="搜索工作记录..." oninput="filterRecords('work')">
+                        <input type="text" id="workTitleSearch" placeholder="搜索标题..." oninput="filterRecords('work')">
+                    </div>
+                    <div class="search-box">
+                        <input type="text" id="workContentSearch" placeholder="搜索内容..." oninput="filterRecords('work')">
                     </div>
                     <select class="form-select" id="workPriorityFilter" onchange="filterRecords('work')" style="width: auto;">
                         <option value="">所有优先级</option>
@@ -831,6 +972,18 @@
                         <option value="medium">中优先级</option>
                         <option value="low">低优先级</option>
                     </select>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.85rem;">日期范围</label>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="date" class="form-input" id="workDateStart" style="width: 140px;" onchange="filterRecords('work')">
+                            <span>至</span>
+                            <input type="date" class="form-input" id="workDateEnd" style="width: 140px;" onchange="filterRecords('work')">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="clearWorkFilters()" style="margin-top: 1.2rem;">清除筛选</button>
                 </div>
 
                 <div id="workList" class="records-list">
@@ -853,8 +1006,29 @@
 
                 <div class="filter-bar">
                     <div class="search-box">
-                        <input type="text" id="thoughtSearch" placeholder="搜索思考总结..." oninput="filterRecords('thought')">
+                        <input type="text" id="thoughtTitleSearch" placeholder="搜索标题..." oninput="filterRecords('thought')">
                     </div>
+                    <div class="search-box">
+                        <input type="text" id="thoughtContentSearch" placeholder="搜索内容..." oninput="filterRecords('thought')">
+                    </div>
+                    <select class="form-select" id="thoughtImportanceFilter" onchange="filterRecords('thought')" style="width: auto;">
+                        <option value="">所有重要性</option>
+                        <option value="important">很重要</option>
+                        <option value="highlight">有点亮点</option>
+                        <option value="normal">普通</option>
+                    </select>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.85rem;">日期范围</label>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="date" class="form-input" id="thoughtDateStart" style="width: 140px;" onchange="filterRecords('thought')">
+                            <span>至</span>
+                            <input type="date" class="form-input" id="thoughtDateEnd" style="width: 140px;" onchange="filterRecords('thought')">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="clearThoughtFilters()" style="margin-top: 1.2rem;">清除筛选</button>
                 </div>
 
                 <div id="thoughtList" class="records-list">
@@ -877,8 +1051,23 @@
 
                 <div class="filter-bar">
                     <div class="search-box">
-                        <input type="text" id="ideaSearch" placeholder="搜索灵感..." oninput="filterRecords('idea')">
+                        <input type="text" id="ideaTitleSearch" placeholder="搜索标题..." oninput="filterRecords('idea')">
                     </div>
+                    <div class="search-box">
+                        <input type="text" id="ideaContentSearch" placeholder="搜索内容..." oninput="filterRecords('idea')">
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.85rem;">日期范围</label>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="date" class="form-input" id="ideaDateStart" style="width: 140px;" onchange="filterRecords('idea')">
+                            <span>至</span>
+                            <input type="date" class="form-input" id="ideaDateEnd" style="width: 140px;" onchange="filterRecords('idea')">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="clearIdeaFilters()" style="margin-top: 1.2rem;">清除筛选</button>
                 </div>
 
                 <div id="ideaList" class="records-list">
@@ -886,6 +1075,95 @@
                         <div class="empty-state-icon">💡</div>
                         <div class="empty-state-title">暂无灵感记录</div>
                         <p>随时记录你的创意和想法</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 客户事项跟进页面 -->
+            <section id="customer" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📋 客户事项跟进</h2>
+                    <button class="btn btn-primary" onclick="openCustomerModal()">
+                        ➕ 新增事项
+                    </button>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <input type="text" id="customerNameSearch" placeholder="搜索客户名字..." oninput="filterCustomers()">
+                    </div>
+                    <div class="search-box">
+                        <input type="text" id="customerOrgSearch" placeholder="搜索机构..." oninput="filterCustomers()">
+                    </div>
+                    <div class="search-box">
+                        <input type="text" id="customerSectorSearch" placeholder="搜索涉及板块..." oninput="filterCustomers()">
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.85rem;">提出时间范围</label>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="date" class="form-input" id="customerDateStart" style="width: 150px;" onchange="filterCustomers()">
+                            <span>至</span>
+                            <input type="date" class="form-input" id="customerDateEnd" style="width: 150px;" onchange="filterCustomers()">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="clearCustomerFilters()" style="margin-top: 1.2rem;">清除筛选</button>
+                </div>
+
+                <div id="customerLoading" class="loading-state" style="display: none; text-align: center; padding: 2rem;">
+                    <span>加载中...</span>
+                </div>
+
+                <div id="customerTableContainer">
+                    <table class="data-table" id="customerTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortCustomerTable('customerName')" style="cursor: pointer;">客户名字 <span class="sort-icon">↕</span></th>
+                                <th onclick="sortCustomerTable('organization')" style="cursor: pointer;">机构 <span class="sort-icon">↕</span></th>
+                                <th onclick="sortCustomerTable('date')" style="cursor: pointer;">提出时间 <span class="sort-icon">↕</span></th>
+                                <th onclick="sortCustomerTable('sector')" style="cursor: pointer;">涉及板块 <span class="sort-icon">↕</span></th>
+                                <th>描述</th>
+                                <th onclick="sortCustomerTable('urgency')" style="cursor: pointer;">紧急程度 <span class="sort-icon">↕</span></th>
+                                <th style="width: 120px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="customerEmpty" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-title">暂无客户事项</div>
+                    <p>点击上方按钮添加客户事项记录</p>
+                </div>
+
+                <div id="customerNoResults" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">🔍</div>
+                    <div class="empty-state-title">没有找到匹配的结果</div>
+                    <p>请尝试调整筛选条件</p>
+                </div>
+
+                <div class="pagination-bar">
+                    <div class="pagination-info">
+                        <span>每页显示</span>
+                        <select id="customerPageSize" onchange="changeCustomerPageSize()" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span>条记录</span>
+                        <span id="customerRecordInfo" style="margin-left: 1rem;"></span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-secondary btn-sm" onclick="customerFirstPage()" id="customerFirstBtn">首页</button>
+                        <button class="btn btn-secondary btn-sm" onclick="customerPrevPage()" id="customerPrevBtn">上一页</button>
+                        <span id="customerPageInfo"></span>
+                        <button class="btn btn-secondary btn-sm" onclick="customerNextPage()" id="customerNextBtn">下一页</button>
+                        <button class="btn btn-secondary btn-sm" onclick="customerLastPage()" id="customerLastBtn">末页</button>
                     </div>
                 </div>
             </section>
@@ -1006,33 +1284,31 @@
                     <textarea class="form-textarea" id="scriptCode" readonly style="height: 400px; font-family: monospace; font-size: 0.8rem; background: #f8f9fa;">var SHEET_URL = 'YOUR_SHEET_URL_HERE';
 
 function doGet(e) {
-  return handleRequest(e);
+  return handleRequest(e, 'GET');
 }
 
 function doPost(e) {
-  return handleRequest(e);
+  return handleRequest(e, 'POST');
 }
 
-function handleRequest(e) {
+function handleRequest(e, method) {
   var ss = SpreadsheetApp.openByUrl(SHEET_URL);
   var sheet = ss.getSheetByName('Data') || ss.insertSheet('Data');
-  
+
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['id', 'type', 'title', 'content', 'priority', 'importance', 'date', 'tags', 'images', 'createdAt', 'updatedAt']);
+    sheet.appendRow(['id', 'type', 'title', 'content', 'priority', 'importance', 'date', 'tags', 'images', 'customerName', 'organization', 'sector', 'description', 'urgency', 'createdAt', 'updatedAt']);
   }
-  
-  var method = e.method;
-  
+
   if (method === 'GET') {
     try {
-      var data = sheet.getDataRange().getValues();
-      var headers = data.shift();
+      var sheetData = sheet.getDataRange().getValues();
+      var headers = sheetData.shift();
       var result = [];
-      
-      for (var i = 0; i < data.length; i++) {
+
+      for (var i = 0; i < sheetData.length; i++) {
         var row = {};
         for (var j = 0; j < headers.length; j++) {
-          var value = data[i][j];
+          var value = sheetData[i][j];
           if (headers[j] === 'tags' || headers[j] === 'images') {
             try { value = JSON.parse(value); } catch (e) {}
           }
@@ -1040,7 +1316,7 @@ function handleRequest(e) {
         }
         result.push(row);
       }
-      
+
       return ContentService.createTextOutput(JSON.stringify(result))
         .setMimeType(ContentService.MimeType.JSON);
     } catch (err) {
@@ -1048,21 +1324,21 @@ function handleRequest(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
-  
+
   if (method === 'POST') {
     try {
       var postData = JSON.parse(e.postData.contents);
-      var headers = ['id', 'type', 'title', 'content', 'priority', 'importance', 'date', 'tags', 'images', 'createdAt', 'updatedAt'];
-      
+      var headers = ['id', 'type', 'title', 'content', 'priority', 'importance', 'date', 'tags', 'images', 'customerName', 'organization', 'sector', 'description', 'urgency', 'createdAt', 'updatedAt'];
+
       if (sheet.getLastRow() > 1) {
         sheet.deleteRows(2, sheet.getLastRow() - 1);
       }
-      
+
       for (var type in postData) {
         for (var i = 0; i < postData[type].length; i++) {
           var record = postData[type][i];
           record.type = type;
-          
+
           var row = [];
           for (var h = 0; h < headers.length; h++) {
             var value = record[headers[h]];
@@ -1072,11 +1348,11 @@ function handleRequest(e) {
               row.push(value || '');
             }
           }
-          
+
           sheet.appendRow(row);
         }
       }
-      
+
       return ContentService.createTextOutput(JSON.stringify({success: true, count: sheet.getLastRow() - 1}))
         .setMimeType(ContentService.MimeType.JSON);
     } catch (err) {
@@ -1084,10 +1360,11 @@ function handleRequest(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
-  
+
   return ContentService.createTextOutput(JSON.stringify({error: 'Unknown method'}))
     .setMimeType(ContentService.MimeType.JSON);
-}</textarea>
+}
+</textarea>
                 </div>
 
                 <div style="background: #e7f3ff; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
@@ -1103,9 +1380,77 @@ function handleRequest(e) {
         </div>
     </div>
 
+    <!-- 客户事项模态框 -->
+    <div class="modal-overlay" id="customerModal">
+        <div class="modal" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="customerModalTitle">新增客户事项</h3>
+                <button class="modal-close" onclick="closeCustomerModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="customerForm">
+                    <input type="hidden" id="customerId">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">客户名字 *</label>
+                            <input type="text" class="form-input" id="customerName" required placeholder="输入客户名字...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">机构 *</label>
+                            <input type="text" class="form-input" id="customerOrg" required placeholder="输入机构名称...">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">提出时间 *</label>
+                            <input type="date" class="form-input" id="customerDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">涉及板块 *</label>
+                            <input type="text" class="form-input" id="customerSector" required placeholder="输入涉及板块...">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">紧急程度 *</label>
+                            <select class="form-select" id="customerUrgency" required>
+                                <option value="">请选择</option>
+                                <option value="high">紧急</option>
+                                <option value="medium">一般</option>
+                                <option value="low">不急</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">描述 *</label>
+                        <textarea class="form-textarea" id="customerDesc" required placeholder="详细描述客户提出的事项..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCustomerModal()">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveCustomerRecord()">保存</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let data = loadData();
         let uploadedImages = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginBtn').addEventListener('click', handleLogin);
+            document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+            checkLogin();
+        });
 
         // 检查登录状态
         function checkLogin() {
@@ -1119,20 +1464,17 @@ function handleRequest(e) {
         }
 
         // 处理登录
-        function handleLogin(event) {
-            event.preventDefault();
+        function handleLogin() {
             const password = document.getElementById('loginPassword').value;
-            
+
             if (password === '135790') {
                 sessionStorage.setItem('leeseflLogin', 'true');
                 document.getElementById('loginPage').classList.add('hidden');
                 document.getElementById('loginError').style.display = 'none';
                 init();
-                return false;
             } else {
                 document.getElementById('loginError').style.display = 'block';
                 document.getElementById('loginPassword').value = '';
-                return false;
             }
         }
 
@@ -1158,12 +1500,18 @@ function handleRequest(e) {
             const defaultData = {
                 work: [],
                 thought: [],
-                idea: []
+                idea: [],
+                customer: []
             };
             
             try {
                 const stored = localStorage.getItem('workRecordData');
-                return stored ? JSON.parse(stored) : defaultData;
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (!parsed.customer) parsed.customer = [];
+                    return parsed;
+                }
+                return defaultData;
             } catch (e) {
                 console.error('加载数据失败:', e);
                 return defaultData;
@@ -1186,15 +1534,17 @@ function handleRequest(e) {
                 link.classList.remove('active');
             });
             event.target.closest('.nav-link').classList.add('active');
-            
+
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.remove('active');
             });
             document.getElementById(tab).classList.add('active');
-            
+
             if (tab === 'dashboard') {
                 updateStats();
                 renderRecentRecords();
+            } else if (tab === 'customer') {
+                initCustomerPage();
             } else {
                 renderList(tab);
             }
@@ -1261,29 +1611,56 @@ function handleRequest(e) {
             try {
                 const container = document.getElementById(type + 'List');
                 if (!container) return;
-                
+
                 const records = data[type];
-                
-                const searchEl = document.getElementById(type + 'Search');
-                const priorityEl = document.getElementById(type + 'PriorityFilter');
-                
-                const searchTerm = searchEl ? searchEl.value.toLowerCase() : '';
-                const priorityFilter = priorityEl ? priorityEl.value : '';
-                
+
+                const titleSearch = document.getElementById(type + 'TitleSearch');
+                const contentSearch = document.getElementById(type + 'ContentSearch');
+                const priorityFilter = document.getElementById(type + 'PriorityFilter');
+                const importanceFilter = document.getElementById(type + 'ImportanceFilter');
+                const dateStart = document.getElementById(type + 'DateStart');
+                const dateEnd = document.getElementById(type + 'DateEnd');
+
+                const titleTerm = titleSearch ? titleSearch.value.toLowerCase().trim() : '';
+                const contentTerm = contentSearch ? contentSearch.value.toLowerCase().trim() : '';
+                const priorityVal = priorityFilter ? priorityFilter.value : '';
+                const importanceVal = importanceFilter ? importanceFilter.value : '';
+                const startDate = dateStart ? dateStart.value : '';
+                const endDate = dateEnd ? dateEnd.value : '';
+
                 let filteredRecords = records;
-                
-                if (searchTerm) {
-                    filteredRecords = filteredRecords.filter(r => 
-                        r.title.toLowerCase().includes(searchTerm) ||
-                        r.content.toLowerCase().includes(searchTerm) ||
-                        (r.tags && r.tags.some(t => t.toLowerCase().includes(searchTerm)))
+
+                if (titleTerm) {
+                    filteredRecords = filteredRecords.filter(r =>
+                        r.title.toLowerCase().includes(titleTerm)
                     );
                 }
-                
-                if (priorityFilter && type === 'work') {
-                    filteredRecords = filteredRecords.filter(r => r.priority === priorityFilter);
+
+                if (contentTerm) {
+                    filteredRecords = filteredRecords.filter(r =>
+                        r.content.toLowerCase().includes(contentTerm) ||
+                        (r.tags && r.tags.some(t => t.toLowerCase().includes(contentTerm)))
+                    );
                 }
-                
+
+                if (priorityVal && type === 'work') {
+                    filteredRecords = filteredRecords.filter(r => r.priority === priorityVal);
+                }
+
+                if (importanceVal && type === 'thought') {
+                    filteredRecords = filteredRecords.filter(r => r.importance === importanceVal);
+                }
+
+                if (startDate || endDate) {
+                    filteredRecords = filteredRecords.filter(r => {
+                        const recordDate = r.date || r.createdAt || '';
+                        const recordDateStr = recordDate.split('T')[0];
+                        const afterStart = !startDate || recordDateStr >= startDate;
+                        const beforeEnd = !endDate || recordDateStr <= endDate;
+                        return afterStart && beforeEnd;
+                    });
+                }
+
                 filteredRecords.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
                 if (filteredRecords.length === 0) {
@@ -1521,6 +1898,32 @@ function handleRequest(e) {
             renderList(type);
         }
 
+        function clearWorkFilters() {
+            document.getElementById('workTitleSearch').value = '';
+            document.getElementById('workContentSearch').value = '';
+            document.getElementById('workPriorityFilter').value = '';
+            document.getElementById('workDateStart').value = '';
+            document.getElementById('workDateEnd').value = '';
+            filterRecords('work');
+        }
+
+        function clearThoughtFilters() {
+            document.getElementById('thoughtTitleSearch').value = '';
+            document.getElementById('thoughtContentSearch').value = '';
+            document.getElementById('thoughtImportanceFilter').value = '';
+            document.getElementById('thoughtDateStart').value = '';
+            document.getElementById('thoughtDateEnd').value = '';
+            filterRecords('thought');
+        }
+
+        function clearIdeaFilters() {
+            document.getElementById('ideaTitleSearch').value = '';
+            document.getElementById('ideaContentSearch').value = '';
+            document.getElementById('ideaDateStart').value = '';
+            document.getElementById('ideaDateEnd').value = '';
+            filterRecords('idea');
+        }
+
         // 处理图片上传
         function handleImageUpload() {
             const input = document.getElementById('ideaImage');
@@ -1753,20 +2156,21 @@ function handleRequest(e) {
                     return;
                 }
 
-                const newData = { work: [], thought: [], idea: [] };
-                
+                const newData = { work: [], thought: [], idea: [], customer: [] };
+
                 cloudData.forEach(record => {
                     if (record.type && newData[record.type]) {
                         newData[record.type].push(record);
                     }
                 });
 
-                if (data.work.length === 0 && data.thought.length === 0 && data.idea.length === 0) {
+                if (data.work.length === 0 && data.thought.length === 0 && data.idea.length === 0 && data.customer.length === 0) {
                     data = newData;
                     saveData();
                     updateStats();
                     renderAllLists();
-                    showToast('已从云端加载 ' + (newData.work.length + newData.thought.length + newData.idea.length) + ' 条记录！', 'success');
+                    initCustomerPage();
+                    showToast('已从云端加载 ' + (newData.work.length + newData.thought.length + newData.idea.length + newData.customer.length) + ' 条记录！', 'success');
                 } else {
                     if (confirm('本地已有数据，是否合并？\n\n"确定" = 合并云端数据到本地\n"取消" = 用云端数据覆盖本地')) {
                         const mergeRecords = (existing, incoming) => {
@@ -1774,20 +2178,23 @@ function handleRequest(e) {
                             const newRecords = incoming.filter(r => !existingIds.has(r.id));
                             return [...existing, ...newRecords];
                         };
-                        
+
                         data.work = mergeRecords(data.work, newData.work);
                         data.thought = mergeRecords(data.thought, newData.thought);
                         data.idea = mergeRecords(data.idea, newData.idea);
-                        
+                        data.customer = mergeRecords(data.customer, newData.customer);
+
                         saveData();
                         updateStats();
                         renderAllLists();
+                        initCustomerPage();
                         showToast('已合并云端数据！', 'success');
                     } else {
                         data = newData;
                         saveData();
                         updateStats();
                         renderAllLists();
+                        initCustomerPage();
                         showToast('已用云端数据覆盖本地！', 'success');
                     }
                 }
@@ -1797,6 +2204,312 @@ function handleRequest(e) {
                 showToast('加载失败：' + error.message + '\n\n请确保：\n1. 已开启科学上网\n2. 正确配置了 Web App URL\n3. Google Apps Script 已正确部署', 'error');
             });
         }
+
+        // ========== 客户事项跟进功能 ==========
+
+        let customerCache = {
+            data: [],
+            filtered: [],
+            currentPage: 1,
+            pageSize: 10,
+            sortField: 'date',
+            sortOrder: 'desc'
+        };
+
+        let customerFilterTimeout = null;
+
+        function initCustomerPage() {
+            customerCache.data = data.customer || [];
+            customerCache.filtered = [...customerCache.data];
+            customerCache.currentPage = 1;
+            renderCustomerTable();
+        }
+
+        function filterCustomers() {
+            if (customerFilterTimeout) {
+                clearTimeout(customerFilterTimeout);
+            }
+
+            customerFilterTimeout = setTimeout(() => {
+                const nameSearch = document.getElementById('customerNameSearch').value.toLowerCase().trim();
+                const orgSearch = document.getElementById('customerOrgSearch').value.toLowerCase().trim();
+                const sectorSearch = document.getElementById('customerSectorSearch').value.toLowerCase().trim();
+                const dateStart = document.getElementById('customerDateStart').value;
+                const dateEnd = document.getElementById('customerDateEnd').value;
+
+                customerCache.filtered = customerCache.data.filter(item => {
+                    const nameMatch = !nameSearch || item.customerName.toLowerCase().includes(nameSearch);
+                    const orgMatch = !orgSearch || item.organization.toLowerCase().includes(orgSearch);
+                    const sectorMatch = !sectorSearch || item.sector.toLowerCase().includes(sectorMatch);
+                    const itemDate = item.date || '';
+                    const dateMatch = (!dateStart || itemDate >= dateStart) && (!dateEnd || itemDate <= dateEnd);
+                    return nameMatch && orgMatch && sectorMatch && dateMatch;
+                });
+
+                customerCache.currentPage = 1;
+                renderCustomerTable();
+            }, 150);
+        }
+
+        function sortCustomerTable(field) {
+            if (customerCache.sortField === field) {
+                customerCache.sortOrder = customerCache.sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                customerCache.sortField = field;
+                customerCache.sortOrder = 'asc';
+            }
+
+            document.querySelectorAll('#customerTable th').forEach(th => {
+                const icon = th.querySelector('.sort-icon');
+                if (icon) icon.className = 'sort-icon';
+            });
+
+            const th = document.querySelector(`#customerTable th[onclick="sortCustomerTable('${field}')"]`);
+            if (th) {
+                const icon = th.querySelector('.sort-icon');
+                if (icon) icon.className = `sort-icon ${customerCache.sortOrder}`;
+            }
+
+            customerCache.filtered.sort((a, b) => {
+                let valA = a[field];
+                let valB = b[field];
+
+                if (field === 'date') {
+                    valA = valA ? new Date(valA).getTime() : 0;
+                    valB = valB ? new Date(valB).getTime() : 0;
+                } else if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) return customerCache.sortOrder === 'asc' ? -1 : 1;
+                if (valA > valB) return customerCache.sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderCustomerTable();
+        }
+
+        function renderCustomerTable() {
+            const tbody = document.getElementById('customerTableBody');
+            const emptyState = document.getElementById('customerEmpty');
+            const noResults = document.getElementById('customerNoResults');
+            const tableContainer = document.getElementById('customerTableContainer');
+            const loading = document.getElementById('customerLoading');
+
+            loading.style.display = 'none';
+
+            if (customerCache.data.length === 0) {
+                tableContainer.style.display = 'none';
+                noResults.style.display = 'none';
+                emptyState.style.display = 'block';
+                document.getElementById('customerRecordInfo').textContent = '';
+                document.getElementById('customerPageInfo').textContent = '';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            if (customerCache.filtered.length === 0) {
+                tableContainer.style.display = 'none';
+                noResults.style.display = 'block';
+                document.getElementById('customerRecordInfo').textContent = '共 0 条记录';
+                document.getElementById('customerPageInfo').textContent = '';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            tableContainer.style.display = 'block';
+
+            const totalRecords = customerCache.filtered.length;
+            const totalPages = Math.ceil(totalRecords / customerCache.pageSize);
+            const start = (customerCache.currentPage - 1) * customerCache.pageSize;
+            const end = start + customerCache.pageSize;
+            const pageData = customerCache.filtered.slice(start, end);
+
+            tbody.innerHTML = pageData.map(item => {
+                const urgencyMap = {
+                    high: { class: 'urgency-high', text: '紧急' },
+                    medium: { class: 'urgency-medium', text: '一般' },
+                    low: { class: 'urgency-low', text: '不急' }
+                };
+                const urgency = urgencyMap[item.urgency] || urgencyMap.medium;
+                const dateDisplay = item.date ? item.date.split('T')[0] : '';
+
+                return `
+                    <tr>
+                        <td>${escapeHtml(item.customerName)}</td>
+                        <td>${escapeHtml(item.organization)}</td>
+                        <td>${dateDisplay}</td>
+                        <td>${escapeHtml(item.sector)}</td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.description)}">${escapeHtml(item.description)}</td>
+                        <td><span class="urgency-tag ${urgency.class}">${urgency.text}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="editCustomerRecord('${item.id}')">编辑</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteCustomerRecord('${item.id}')">删除</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('customerRecordInfo').textContent = `共 ${totalRecords} 条记录`;
+            document.getElementById('customerPageInfo').textContent = `第 ${customerCache.currentPage} / ${totalPages} 页`;
+
+            document.getElementById('customerFirstBtn').disabled = customerCache.currentPage === 1;
+            document.getElementById('customerPrevBtn').disabled = customerCache.currentPage === 1;
+            document.getElementById('customerNextBtn').disabled = customerCache.currentPage === totalPages;
+            document.getElementById('customerLastBtn').disabled = customerCache.currentPage === totalPages;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function customerFirstPage() {
+            customerCache.currentPage = 1;
+            renderCustomerTable();
+        }
+
+        function customerPrevPage() {
+            if (customerCache.currentPage > 1) {
+                customerCache.currentPage--;
+                renderCustomerTable();
+            }
+        }
+
+        function customerNextPage() {
+            const totalPages = Math.ceil(customerCache.filtered.length / customerCache.pageSize);
+            if (customerCache.currentPage < totalPages) {
+                customerCache.currentPage++;
+                renderCustomerTable();
+            }
+        }
+
+        function customerLastPage() {
+            customerCache.currentPage = Math.ceil(customerCache.filtered.length / customerCache.pageSize);
+            renderCustomerTable();
+        }
+
+        function changeCustomerPageSize() {
+            customerCache.pageSize = parseInt(document.getElementById('customerPageSize').value);
+            customerCache.currentPage = 1;
+            renderCustomerTable();
+        }
+
+        function clearCustomerFilters() {
+            document.getElementById('customerNameSearch').value = '';
+            document.getElementById('customerOrgSearch').value = '';
+            document.getElementById('customerSectorSearch').value = '';
+            document.getElementById('customerDateStart').value = '';
+            document.getElementById('customerDateEnd').value = '';
+            filterCustomers();
+        }
+
+        function openCustomerModal(id = null) {
+            document.getElementById('customerModal').classList.add('active');
+            document.getElementById('customerForm').reset();
+            document.getElementById('customerId').value = '';
+
+            if (id) {
+                document.getElementById('customerModalTitle').textContent = '编辑客户事项';
+                const record = data.customer.find(r => r.id === id);
+                if (record) {
+                    document.getElementById('customerId').value = record.id;
+                    document.getElementById('customerName').value = record.customerName;
+                    document.getElementById('customerOrg').value = record.organization;
+                    document.getElementById('customerDate').value = record.date ? record.date.split('T')[0] : '';
+                    document.getElementById('customerSector').value = record.sector;
+                    document.getElementById('customerUrgency').value = record.urgency;
+                    document.getElementById('customerDesc').value = record.description;
+                }
+            } else {
+                document.getElementById('customerModalTitle').textContent = '新增客户事项';
+                document.getElementById('customerDate').valueAsDate = new Date();
+            }
+        }
+
+        function closeCustomerModal() {
+            document.getElementById('customerModal').classList.remove('active');
+        }
+
+        function saveCustomerRecord() {
+            const id = document.getElementById('customerId').value;
+            const customerName = document.getElementById('customerName').value.trim();
+            const organization = document.getElementById('customerOrg').value.trim();
+            const date = document.getElementById('customerDate').value;
+            const sector = document.getElementById('customerSector').value.trim();
+            const urgency = document.getElementById('customerUrgency').value;
+            const description = document.getElementById('customerDesc').value.trim();
+
+            if (!customerName || !organization || !date || !sector || !urgency || !description) {
+                showToast('请填写所有必填字段', 'error');
+                return;
+            }
+
+            const record = {
+                id: id || Date.now().toString(),
+                customerName,
+                organization,
+                date,
+                sector,
+                urgency,
+                description,
+                updatedAt: new Date().toISOString()
+            };
+
+            if (!id) {
+                record.createdAt = new Date().toISOString();
+            } else {
+                const existing = data.customer.find(r => r.id === id);
+                if (existing) {
+                    record.createdAt = existing.createdAt;
+                }
+            }
+
+            if (id) {
+                const index = data.customer.findIndex(r => r.id === id);
+                if (index !== -1) {
+                    data.customer[index] = record;
+                }
+            } else {
+                data.customer.push(record);
+            }
+
+            saveData();
+            closeCustomerModal();
+            initCustomerPage();
+            showToast(id ? '事项已更新' : '事项已添加', 'success');
+        }
+
+        function editCustomerRecord(id) {
+            openCustomerModal(id);
+        }
+
+        function deleteCustomerRecord(id) {
+            if (!confirm('确定要删除这条客户事项吗？此操作不可恢复。')) {
+                return;
+            }
+
+            data.customer = data.customer.filter(r => r.id !== id);
+            saveData();
+            initCustomerPage();
+            showToast('事项已删除', 'success');
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeCustomerModal();
+            }
+        });
+
+        document.getElementById('customerModal').addEventListener('click', function(e) {
+            if (e.target.id === 'customerModal') {
+                closeCustomerModal();
+            }
+        });
     </script>
 </body>
 </html>
